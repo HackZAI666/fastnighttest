@@ -1,0 +1,4049 @@
+这个是index.html文件：
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Battle-SE</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      touch-action: manipulation;
+    }
+
+    #gameCanvas {
+      display: block;
+      touch-action: none;
+    }
+
+    #gearBtn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      font-size: 20px;
+      line-height: 38px;
+      text-align: center;
+      z-index: 30;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    #settingsPanel {
+      position: fixed;
+      top: 58px;
+      left: 10px;
+      width: 240px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.82);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      z-index: 31;
+      display: none;
+      pointer-events: auto;
+    }
+
+    #settingsPanel .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    #closeSettingsBtn {
+      margin-top: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #lobbyOverlay,
+    #dangerLobbyOverlay,
+    #warehouseOverlay,
+    #resultOverlay,
+    #loginOverlay,
+    #newAccountOverlay,
+    #accountCodeOverlay {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+
+    #dangerLobbyOverlay,
+    #warehouseOverlay,
+    #resultOverlay,
+    #loginOverlay,
+    #newAccountOverlay,
+    #accountCodeOverlay {
+      display: none;
+    }
+
+    #lobbyPanel,
+    #resultPanel,
+    #loginPanel,
+    #newAccountPanel,
+    #accountCodePanel {
+      width: min(980px, 100%);
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      padding: 28px;
+      box-sizing: border-box;
+    }
+
+    #lobbyTitle,
+    #resultTitle,
+    #dangerTitle,
+    #loginTitle,
+    #newAccountTitle,
+    #accountCodeTitle {
+      text-align: center;
+      font-size: 34px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 10px;
+    }
+
+    #lobbySubtitle,
+    #resultSubtitle,
+    #dangerSubtitle,
+    #loginSubtitle,
+    #newAccountSubtitle,
+    #accountCodeSubtitle {
+      text-align: center;
+      color: #666;
+      font-size: 15px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    #modeGrid {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .modeCard {
+      flex: 1 1 320px;
+      min-height: 260px;
+      border: 1px solid #e6e6e6;
+      border-radius: 22px;
+      padding: 22px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #fafafa;
+    }
+
+    .modeCard h2 {
+      margin: 0 0 10px 0;
+      font-size: 26px;
+      color: #111;
+    }
+
+    .modeCard p {
+      margin: 0;
+      color: #444;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .modeCard .meta {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #eee;
+      color: #555;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .enterBtn,
+    .backBtn,
+    .greenBtn,
+    .signBtn {
+      margin-top: 18px;
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      background: #111;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .greenBtn {
+      background: #1f9d42;
+      box-shadow: 0 8px 18px rgba(31, 157, 66, 0.18);
+    }
+
+    .backBtn {
+      width: auto;
+      min-width: 180px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #dangerLobbyContent {
+      position: relative;
+      width: min(1000px, 100%);
+      height: min(680px, 100%);
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    #dangerTopText {
+      position: absolute;
+      left: 50%;
+      top: 24px;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #111;
+      z-index: 2;
+    }
+
+    #dangerTopText .title {
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    #dangerTopText .sub {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    #dangerAvatarWrap {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -54%);
+      width: 220px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #dangerAvatarCanvas {
+      display: block;
+    }
+
+    #dangerAvatarLabel {
+      position: absolute;
+      left: 50%;
+      top: 222px;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: #444;
+      text-align: center;
+      width: 180px;
+      line-height: 1.5;
+    }
+
+    #dangerWarehouseBtn {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      width: 170px;
+      height: 56px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.08);
+      color: #111;
+      font-size: 17px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    #dangerStartBtn {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      width: 190px;
+      height: 56px;
+      border: none;
+      border-radius: 16px;
+      background: #1f9d42;
+      color: #fff;
+      font-size: 17px;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(31, 157, 66, 0.20);
+      z-index: 3;
+    }
+
+    #warehouseLayout {
+      width: min(1280px, 100%);
+      height: min(820px, 100%);
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+      display: flex;
+    }
+
+    #warehouseLeftPane {
+      flex: 1;
+      position: relative;
+      background: #fff;
+      overflow: auto;
+    }
+
+    #warehouseCanvas {
+      display: block;
+      width: 100%;
+      touch-action: none;
+    }
+
+    #warehouseRightPane {
+      width: 320px;
+      background: #f7f7f7;
+      border-left: 1px solid #eaeaea;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #warehouseTabBar {
+      padding: 16px 16px 0 16px;
+    }
+
+    .folderTab {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 14px 14px 8px 8px;
+      background: #fff;
+      border: 1px solid #dedede;
+      border-bottom: none;
+      font-size: 15px;
+      color: #111;
+      box-shadow: 0 -1px 0 rgba(0,0,0,0.03);
+    }
+
+    #warehouseInfo {
+      padding: 18px 16px;
+      color: #222;
+      line-height: 1.6;
+      font-size: 15px;
+      flex: 1;
+    }
+
+    #warehouseInfo .card {
+      background: #fff;
+      border: 1px solid #ececec;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    #warehouseBackBtn {
+      margin: 0 16px 16px 16px;
+      width: calc(100% - 32px);
+      height: 52px;
+      border: none;
+      border-radius: 14px;
+      background: #111;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #mobileControls {
+      position: fixed;
+      inset: 0;
+      z-index: 25;
+      pointer-events: none;
+      display: none;
+    }
+
+    #joystick {
+      position: fixed;
+      left: 14px;
+      bottom: 14px;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.10);
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    #joystickStick {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 70px;
+      height: 70px;
+      margin-left: -35px;
+      margin-top: -35px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.20);
+      border: 2px solid rgba(255, 255, 255, 0.14);
+      transform: translate(0px, 0px);
+    }
+
+    .mobileBtn {
+      position: fixed;
+      right: 18px;
+      width: 92px;
+      height: 92px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.10);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 16px;
+      pointer-events: auto;
+      touch-action: none;
+    }
+
+    #fireBtn {
+      bottom: 18px;
+    }
+
+    #reloadBtn {
+      bottom: 210px;
+    }
+
+    #jumpBtn {
+      bottom: 114px;
+    }
+
+    #hud {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #playerKillToast {
+      position: absolute;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255, 245, 130, 0.95);
+      color: #111;
+      font-size: 16px;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(255, 240, 120, 0.55);
+      display: none;
+      pointer-events: none;
+    }
+
+    #killFeed {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 16px;
+      pointer-events: auto;
+      cursor: pointer;
+      border-radius: 10px;
+    }
+
+    #ammoHud {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 16px;
+      border-radius: 10px;
+    }
+
+    #scoreboard {
+      position: absolute;
+      top: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 240px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #000;
+      font-size: 16px;
+      display: none;
+      pointer-events: auto;
+      border-radius: 14px;
+    }
+
+    .signTextArea {
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      box-sizing: border-box;
+      outline: none;
+      background: #fff;
+      color: #111;
+    }
+
+    .signInput {
+      width: 100%;
+      height: 54px;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 0 16px;
+      font-size: 16px;
+      box-sizing: border-box;
+      outline: none;
+      background: #fff;
+      color: #111;
+    }
+
+    .signInfoBox {
+      border: 1px solid #eee;
+      border-radius: 18px;
+      background: #fafafa;
+      padding: 18px;
+      color: #222;
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    .signError {
+      margin-top: 10px;
+      color: #d64040;
+      font-size: 14px;
+      min-height: 18px;
+    }
+
+    .signRow {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    #dangerSaveBtn {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      width: 150px;
+      height: 50px;
+      border: none;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.08);
+      color: #111;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 3;
+    }
+
+    @media (max-width: 640px) {
+      #loginPanel,
+      #newAccountPanel,
+      #accountCodePanel,
+      #lobbyPanel,
+      #resultPanel {
+        padding: 22px;
+        border-radius: 22px;
+      }
+
+      #lobbyTitle,
+      #resultTitle,
+      #dangerTitle,
+      #loginTitle,
+      #newAccountTitle,
+      #accountCodeTitle {
+        font-size: 28px;
+      }
+
+      .signBtn,
+      .enterBtn,
+      .backBtn,
+      .greenBtn {
+        width: 100%;
+      }
+
+      #dangerSaveBtn {
+        width: 122px;
+        height: 44px;
+        left: 16px;
+        top: 16px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div id="loginOverlay">
+    <div id="loginPanel">
+      <div id="loginTitle">请输入你的账号代码</div>
+      <div id="loginSubtitle">输入你的账号代码后进入游戏。没有账号可以直接创建一个新账号。</div>
+
+      <textarea id="loginCodeInput" class="signTextArea" placeholder="把账号代码粘贴到这里"></textarea>
+      <div id="loginErrorText" class="signError"></div>
+
+      <div class="signRow">
+        <button id="loginEnterBtn" class="signBtn">登录</button>
+        <button id="loginCreateBtn" class="signBtn" style="background:#1f9d42;">或者创建新账号</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="newAccountOverlay">
+    <div id="newAccountPanel">
+      <div id="newAccountTitle">新账号说明</div>
+      <div id="newAccountSubtitle">一把危险地带游戏结束后，请手动点击设置，然后获取账号代码</div>
+
+      <div class="signInfoBox">
+        这个账号系统是本地代码系统。<br>
+        你可以把账号代码复制下来，换设备后再粘贴回来继续玩。<br><br>
+        进入危险地带后，左上角会有“保存游戏”按钮。点击后会生成账号代码，下面有复制按钮。
+      </div>
+
+      <div class="signRow">
+        <button id="newAccountConfirmBtn" class="signBtn" style="background:#1f9d42;">我知道了，创建新账号</button>
+        <button id="newAccountBackBtn" class="signBtn" style="background:#f1f1f1; color:#111;">返回登录</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="accountCodeOverlay">
+    <div id="accountCodePanel">
+      <div id="accountCodeTitle">账号代码</div>
+      <div id="accountCodeSubtitle">复制下面这串代码，之后在登录页粘贴即可恢复仓库和设置</div>
+
+      <textarea id="accountCodeText" class="signTextArea" readonly></textarea>
+
+      <div class="signRow">
+        <button id="copyAccountCodeBtn" class="signBtn" style="background:#1f9d42;">复制</button>
+        <button id="closeAccountCodeBtn" class="signBtn" style="background:#f1f1f1; color:#111;">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="lobbyOverlay">
+    <div id="lobbyPanel">
+      <div id="lobbyTitle">选择模式</div>
+      <div id="lobbySubtitle">先进入大厅，再选择你要玩的模式。</div>
+
+      <div id="modeGrid">
+        <div class="modeCard">
+          <div>
+            <h2>打战场模式</h2>
+            <p>
+              标准对战模式，适合直接开打。<br>
+              红队达到 250 击杀后胜利。
+            </p>
+            <div class="meta">
+              特点：正常人数、正常节奏、适合练枪和刷击杀。
+            </div>
+          </div>
+          <button id="battleEnterBtn" class="enterBtn">进入</button>
+        </div>
+
+        <div class="modeCard">
+          <div>
+            <h2>危险地带模式</h2>
+            <p>
+              搜打撤模式入口。<br>
+              先进入危险地带大厅，再打开仓库整理物资。
+            </p>
+            <div class="meta">
+              特点：大厅 + 仓库 + 后续可接撤离、搜刮、物资系统。
+            </div>
+          </div>
+          <button id="dangerEnterBtn" class="enterBtn">进入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dangerLobbyOverlay">
+    <div id="dangerLobbyContent">
+      <div id="dangerTopText">
+        <div class="title">危险地带大厅</div>
+        <div class="sub">
+          先整理仓库，再开始行动。<br>
+          你现在看到的是没有武器的主角。
+        </div>
+      </div>
+
+      <div id="dangerAvatarWrap">
+        <canvas id="dangerAvatarCanvas" width="220" height="260"></canvas>
+        <div id="dangerAvatarLabel">大厅角色<br>和大战场主角是同一个人</div>
+      </div>
+
+      <button id="dangerWarehouseBtn">仓库</button>
+      <button id="dangerStartBtn">开始行动</button>
+    </div>
+  </div>
+
+  <div id="warehouseOverlay">
+    <div id="warehouseLayout">
+      <div id="warehouseLeftPane">
+        <canvas id="warehouseCanvas"></canvas>
+      </div>
+
+      <div id="warehouseRightPane">
+        <div id="warehouseTabBar">
+          <div class="folderTab">仓库</div>
+        </div>
+
+        <div id="warehouseInfo">
+          <div class="card">
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">基础物品</div>
+            <div>AK 默认横着摆，放不下时自动竖放。</div>
+            <div>图片：assets/weapon-right.png</div>
+            <div>点击后可选中并拖动。</div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">规则说明</div>
+            <div>占格子显示灰色。</div>
+            <div>拖动时合法预览显示绿色，非法显示红色。</div>
+            <div>拖出矩阵或放不下会自动回到原位。</div>
+          </div>
+        </div>
+
+        <button id="warehouseBackBtn">返回大厅</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultOverlay">
+    <div id="resultPanel">
+      <div id="resultTitle">结果</div>
+      <div id="resultSubtitle">...</div>
+      <button id="returnLobbyBtn" class="backBtn">返回大厅</button>
+    </div>
+  </div>
+
+  <button id="gearBtn" aria-label="设置">⚙</button>
+
+  <div id="settingsPanel">
+    <div style="font-size:18px; margin-bottom:8px;">设置</div>
+
+    <div class="row">
+      <input type="checkbox" id="mobileModeCheckbox">
+      <label for="mobileModeCheckbox">手机版</label>
+    </div>
+
+    <div style="font-size:13px; line-height:1.5; opacity:0.85;">
+      勾选后会显示左下角摇杆、右下角开火和换弹按钮。<br>
+      这里也保留了一个透明跳跃按钮。
+    </div>
+
+    <button id="closeSettingsBtn">退出设置</button>
+  </div>
+
+  <div id="mobileControls">
+    <div id="joystick">
+      <div id="joystickStick"></div>
+    </div>
+
+    <button id="jumpBtn" class="mobileBtn">跳</button>
+    <button id="reloadBtn" class="mobileBtn">换弹</button>
+    <button id="fireBtn" class="mobileBtn">开火</button>
+  </div>
+
+  <div id="hud">
+    <div id="playerKillToast"></div>
+    <div id="killFeed">击杀提示（点击查看排行榜）</div>
+    <div id="ammoHud">30/30</div>
+    <div id="scoreboard"></div>
+  </div>
+
+  <script src="map1.js"></script>
+  <script src="AWbullet.js"></script>
+  <script src="weapon.js"></script>
+  <script src="bot.js"></script>
+  <script src="player.js"></script>
+  <script src="cangku.js"></script>
+  <script src="sign.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
+这个是main.js文件：
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const hudEl = document.getElementById("hud");
+const killFeedEl = document.getElementById("killFeed");
+const scoreboardEl = document.getElementById("scoreboard");
+const ammoHudEl = document.getElementById("ammoHud");
+const playerKillToastEl = document.getElementById("playerKillToast");
+
+const gearBtn = document.getElementById("gearBtn");
+const settingsPanel = document.getElementById("settingsPanel");
+const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+const mobileModeCheckbox = document.getElementById("mobileModeCheckbox");
+
+const lobbyOverlay = document.getElementById("lobbyOverlay");
+const battleEnterBtn = document.getElementById("battleEnterBtn");
+const dangerEnterBtn = document.getElementById("dangerEnterBtn");
+
+const dangerLobbyOverlay = document.getElementById("dangerLobbyOverlay");
+const dangerWarehouseBtn = document.getElementById("dangerWarehouseBtn");
+const dangerStartBtn = document.getElementById("dangerStartBtn");
+
+const dangerAvatarCanvas = document.getElementById("dangerAvatarCanvas");
+const dangerAvatarCtx = dangerAvatarCanvas.getContext("2d");
+
+const warehouseOverlay = document.getElementById("warehouseOverlay");
+const warehouseCanvas = document.getElementById("warehouseCanvas");
+const warehouseLeftPane = document.getElementById("warehouseLeftPane");
+const warehouseBackBtn = document.getElementById("warehouseBackBtn");
+
+const resultOverlay = document.getElementById("resultOverlay");
+const resultTitleEl = document.getElementById("resultTitle");
+const resultSubtitleEl = document.getElementById("resultSubtitle");
+const returnLobbyBtn = document.getElementById("returnLobbyBtn");
+
+const mobileControls = document.getElementById("mobileControls");
+const joystick = document.getElementById("joystick");
+const joystickStick = document.getElementById("joystickStick");
+const fireBtn = document.getElementById("fireBtn");
+const reloadBtn = document.getElementById("reloadBtn");
+const jumpBtn = document.getElementById("jumpBtn");
+
+let player = null;
+let cameraX = 0;
+let lastTime = 0;
+
+let currentMode = null;
+let gameState = "login";
+let resultNextState = "modeSelect";
+let currentAccountId = "";
+
+const input = {
+  left: false,
+  right: false,
+  jumpPressed: false,
+  mouseDown: false
+};
+
+let mouseX = window.innerWidth * 0.65;
+let mouseY = window.innerHeight * 0.45;
+
+let bots = [];
+let bullets = [];
+
+let redKills = 0;
+let blueKills = 0;
+let killFeed = [];
+let scoreboardVisible = false;
+
+let settingsOpen = false;
+let mobileModeEnabled = false;
+
+const MOBILE_MODE_STORAGE_KEY = "battleSE_mobileMode";
+
+let joystickActive = false;
+let joystickPointerId = null;
+let joystickCenterX = 0;
+let joystickCenterY = 0;
+const joystickRadius = 62;
+
+let mobileAimVecX = 1;
+let mobileAimVecY = 0;
+
+let playerKillToastTimer = 0;
+let resultReturnTimer = 0;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = "block";
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function teamName(team) {
+  return team === "ally" ? "红队" : "蓝队";
+}
+
+function teamColor(team) {
+  return team === "ally" ? "#ff6666" : "#6bb0ff";
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function getModeConfig(mode) {
+  if (mode === "danger") {
+    return {
+      allyCount: 14,
+      enemyCount: 14,
+      spacing: 110,
+      botBoost: 35,
+      fireInterval: 0.16,
+      reloadDuration: 3.2,
+      forceAggressive: true,
+      hasWinCondition: false
+    };
+  }
+
+  return {
+    allyCount: 20,
+    enemyCount: 20,
+    spacing: 85,
+    botBoost: 0,
+    fireInterval: 0.2,
+    reloadDuration: 4,
+    forceAggressive: false,
+    hasWinCondition: true
+  };
+}
+
+function syncUi() {
+  hudEl.style.display = gameState === "playing" ? "block" : "none";
+  mobileControls.style.display = (mobileModeEnabled && gameState === "playing") ? "block" : "none";
+
+  const showGear = gameState === "playing" || gameState === "dangerLobby" || gameState === "warehouse";
+  gearBtn.style.display = showGear ? "block" : "none";
+
+  if (!showGear) {
+    settingsOpen = false;
+    settingsPanel.style.display = "none";
+  }
+
+  if (gameState !== "playing") {
+    input.left = false;
+    input.right = false;
+    input.jumpPressed = false;
+    input.mouseDown = false;
+    resetJoystick();
+  }
+}
+
+function hideAllLayers() {
+  lobbyOverlay.style.display = "none";
+  dangerLobbyOverlay.style.display = "none";
+  warehouseOverlay.style.display = "none";
+  resultOverlay.style.display = "none";
+
+  const loginOverlay = document.getElementById("loginOverlay");
+  const newAccountOverlay = document.getElementById("newAccountOverlay");
+  const accountCodeOverlay = document.getElementById("accountCodeOverlay");
+
+  if (loginOverlay) loginOverlay.style.display = "none";
+  if (newAccountOverlay) newAccountOverlay.style.display = "none";
+  if (accountCodeOverlay) accountCodeOverlay.style.display = "none";
+}
+
+function hideScoreboardAndToast() {
+  scoreboardVisible = false;
+  scoreboardEl.style.display = "none";
+  playerKillToastEl.style.display = "none";
+  playerKillToastTimer = 0;
+}
+
+function showLoginScreen() {
+  hideAllLayers();
+  gameState = "login";
+  currentMode = null;
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+
+  if (window.cangkuSystem) window.cangkuSystem.hide();
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  syncUi();
+
+  if (window.SignSystem && typeof window.SignSystem.showLogin === "function") {
+    window.SignSystem.showLogin();
+  }
+}
+
+function showModeSelect() {
+  hideAllLayers();
+  lobbyOverlay.style.display = "flex";
+  gameState = "modeSelect";
+  currentMode = null;
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+
+  if (window.cangkuSystem) window.cangkuSystem.hide();
+  syncUi();
+}
+
+function drawDangerLobbyAvatar() {
+  const ctx2 = dangerAvatarCtx;
+  const w = dangerAvatarCanvas.width;
+  const h = dangerAvatarCanvas.height;
+
+  ctx2.clearRect(0, 0, w, h);
+  ctx2.fillStyle = "#ffffff";
+  ctx2.fillRect(0, 0, w, h);
+
+  const bodyW = 68;
+  const bodyH = 102;
+  const x = Math.round((w - bodyW) / 2);
+  const y = 34;
+
+  ctx2.fillStyle = "#111111";
+  ctx2.fillRect(x, y, bodyW, bodyH);
+
+  ctx2.strokeStyle = "#000000";
+  ctx2.lineWidth = 2;
+  ctx2.strokeRect(x, y, bodyW, bodyH);
+
+  ctx2.fillStyle = "#444444";
+  ctx2.fillRect(x + 6, y + 6, bodyW - 12, 14);
+
+  ctx2.save();
+  ctx2.fillStyle = "#444444";
+  ctx2.font = "14px Arial";
+  ctx2.textAlign = "center";
+  ctx2.fillText("大厅角色", w / 2, h - 28);
+  ctx2.restore();
+}
+
+function resizeWarehouseCanvas() {
+  if (!warehouseCanvas || !warehouseLeftPane) return;
+  const rect = warehouseLeftPane.getBoundingClientRect();
+  warehouseCanvas.width = Math.max(1, Math.floor(rect.width));
+  warehouseCanvas.height = Math.max(1, Math.floor(rect.height));
+}
+
+function showDangerLobby() {
+  hideAllLayers();
+  dangerLobbyOverlay.style.display = "flex";
+  gameState = "dangerLobby";
+  currentMode = "danger";
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+
+  if (window.cangkuSystem) window.cangkuSystem.hide();
+  syncUi();
+  requestAnimationFrame(drawDangerLobbyAvatar);
+}
+
+function showWarehouse() {
+  hideAllLayers();
+  warehouseOverlay.style.display = "flex";
+  gameState = "warehouse";
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+  syncUi();
+
+  requestAnimationFrame(() => {
+    if (window.cangkuSystem) {
+      window.cangkuSystem.resize();
+      window.cangkuSystem.show();
+    } else {
+      resizeWarehouseCanvas();
+    }
+  });
+}
+
+function showResult(title, subtitle) {
+  hideAllLayers();
+  resultOverlay.style.display = "flex";
+  resultTitleEl.textContent = title;
+  resultSubtitleEl.textContent = subtitle;
+  gameState = "result";
+  window.__currentMode = null;
+  hideScoreboardAndToast();
+  syncUi();
+}
+
+function updateCamera() {
+  if (!player) return;
+  cameraX = player.x + player.w / 2 - canvas.width / 2;
+  cameraX = clamp(cameraX, 0, Math.max(0, WORLD.width - canvas.width));
+}
+
+function getLeaderboardEntries() {
+  return [player, ...bots]
+    .filter(Boolean)
+    .sort((a, b) => {
+      if ((b.kills || 0) !== (a.kills || 0)) {
+        return (b.kills || 0) - (a.kills || 0);
+      }
+      return String(a.name || "").localeCompare(String(b.name || ""));
+    });
+}
+
+function renderKillFeedEntry(item) {
+  if (item.isPlayerKill) {
+    return `
+      <div style="padding:4px 8px; border-radius:10px; background:rgba(255,245,140,0.95); color:#111; box-shadow:0 0 14px rgba(255,240,120,0.45); font-weight:700;">
+        你击杀了 <span style="color:#000;">${escapeHtml(item.victimName)}</span>
+      </div>
+    `;
+  }
+
+  return `
+    <span style="color:${teamColor(item.killerTeam)}">${escapeHtml(item.killerName)}</span>
+    击杀
+    <span style="color:${teamColor(item.victimTeam)}">${escapeHtml(item.victimName)}</span>
+  `;
+}
+
+function updateHUD() {
+  if (gameState !== "playing") {
+    hudEl.style.display = "none";
+    scoreboardEl.style.display = "none";
+    return;
+  }
+
+  hudEl.style.display = "block";
+
+  if (killFeed.length > 0) {
+    const latest = killFeed[0];
+    killFeedEl.innerHTML = renderKillFeedEntry(latest);
+
+    if (latest.isPlayerKill) {
+      killFeedEl.style.background = "transparent";
+      killFeedEl.style.color = "#111";
+      killFeedEl.style.border = "1px solid rgba(255,245,140,0.8)";
+      killFeedEl.style.boxShadow = "0 0 16px rgba(255,240,120,0.30)";
+    } else {
+      killFeedEl.style.background = "rgba(0, 0, 0, 0.55)";
+      killFeedEl.style.color = "#fff";
+      killFeedEl.style.border = "none";
+      killFeedEl.style.boxShadow = "none";
+    }
+  } else {
+    killFeedEl.textContent = "击杀提示（点击查看排行榜）";
+    killFeedEl.style.background = "rgba(0, 0, 0, 0.55)";
+    killFeedEl.style.color = "#fff";
+    killFeedEl.style.border = "none";
+    killFeedEl.style.boxShadow = "none";
+  }
+
+  if (player) {
+    ammoHudEl.textContent =
+      player.weapon.ammo > 0
+        ? `${player.weapon.ammo}/${player.weapon.magSize}`
+        : "无子弹";
+  } else {
+    ammoHudEl.textContent = "30/30";
+  }
+
+  if (!scoreboardVisible) {
+    scoreboardEl.style.display = "none";
+    return;
+  }
+
+  const leaderboard = getLeaderboardEntries()
+    .slice(0, 10)
+    .map((entity, index) => {
+      return `
+        <div style="display:flex; justify-content:space-between; margin:2px 0; color:${teamColor(entity.team)};">
+          <span>${index + 1}. ${escapeHtml(entity.name || teamName(entity.team))}</span>
+          <span>${entity.kills || 0} 杀</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  const recentKills = killFeed
+    .map((item) => {
+      return `
+        <div style="margin:2px 0;">
+          <span style="color:${teamColor(item.killerTeam)}">${escapeHtml(item.killerName)}</span>
+          击杀
+          <span style="color:${teamColor(item.victimTeam)}">${escapeHtml(item.victimName)}</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  scoreboardEl.style.display = "block";
+  scoreboardEl.innerHTML = `
+    <div style="font-size:20px; margin-bottom:8px;">排行榜</div>
+    <div style="display:flex; gap:10px; margin-bottom:12px;">
+      <div style="flex:1; padding:6px 8px; border:1px solid rgba(255,102,102,0.35); color:#ff6666;">
+        红队击杀数：${redKills}
+      </div>
+      <div style="flex:1; padding:6px 8px; border:1px solid rgba(107,176,255,0.35); color:#6bb0ff;">
+        蓝队击杀数：${blueKills}
+      </div>
+    </div>
+
+    <div style="margin-bottom:6px; font-size:16px;">个人击杀榜</div>
+    <div style="line-height:1.5; margin-bottom:12px;">
+      ${leaderboard || "<div>暂无排行</div>"}
+    </div>
+
+    <div style="margin-bottom:6px; font-size:16px;">最近击杀</div>
+    <div style="line-height:1.5;">
+      ${recentKills || "<div>暂无击杀</div>"}
+    </div>
+  `;
+}
+
+function toggleScoreboard() {
+  if (gameState !== "playing") return;
+  scoreboardVisible = !scoreboardVisible;
+  updateHUD();
+}
+
+killFeedEl.addEventListener("click", toggleScoreboard);
+
+function showPlayerKillToast(victimName) {
+  playerKillToastEl.textContent = `你击杀了 ${victimName}`;
+  playerKillToastEl.style.display = "block";
+  playerKillToastTimer = 1.6;
+}
+
+function clearInputs() {
+  input.left = false;
+  input.right = false;
+  input.jumpPressed = false;
+  input.mouseDown = false;
+  resetJoystick();
+}
+
+function resetMatchState() {
+  player = null;
+  bots = [];
+  bullets = [];
+  killFeed = [];
+  redKills = 0;
+  blueKills = 0;
+  scoreboardVisible = false;
+  playerKillToastTimer = 0;
+  playerKillToastEl.style.display = "none";
+  updateHUD();
+}
+
+function endBattle(isWin) {
+  if (gameState !== "playing") return;
+
+  gameState = "result";
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  scoreboardVisible = false;
+  updateHUD();
+
+  resultNextState = "modeSelect";
+  showResult(
+    isWin ? "胜利" : "失败",
+    isWin
+      ? "红队先达到 250 击杀，战斗结束。"
+      : "蓝队先达到 250 击杀，战斗结束。"
+  );
+
+  resultReturnTimer = 2.2;
+  clearInputs();
+}
+
+function endDangerRaid() {
+  if (gameState !== "playing") return;
+
+  gameState = "result";
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  scoreboardVisible = false;
+  updateHUD();
+
+  resultNextState = "dangerLobby";
+  showResult("失败", "你在危险地带中倒下了。");
+
+  resultReturnTimer = 2.2;
+  clearInputs();
+}
+
+function returnFromResult() {
+  if (resultNextState === "dangerLobby") {
+    showDangerLobby();
+    return;
+  }
+  showModeSelect();
+}
+
+function registerKill(killer, victim) {
+  if (!killer || !victim) return;
+
+  killer.kills = (killer.kills || 0) + 1;
+
+  const killerTeam = killer.team;
+  const victimTeam = victim.team;
+
+  if (killerTeam === "ally") redKills += 1;
+  if (killerTeam === "enemy") blueKills += 1;
+
+  const isPlayerKill = killer === player;
+
+  killFeed.unshift({
+    killerName: killer.name || teamName(killer.team),
+    killerTeam,
+    victimName: victim.name || teamName(victim.team),
+    victimTeam,
+    isPlayerKill
+  });
+
+  if (killFeed.length > 6) killFeed.pop();
+
+  if (isPlayerKill) {
+    showPlayerKillToast(victim.name || teamName(victim.team));
+  }
+
+  updateHUD();
+
+  if (currentMode === "battle") {
+    if (redKills >= 250) {
+      endBattle(true);
+    } else if (blueKills >= 250) {
+      endBattle(false);
+    }
+  }
+}
+
+function drawHealthBar(ctx, x, y, w, health, maxHealth) {
+  const barW = w;
+  const barH = 7;
+  const pct = Math.max(0, Math.min(1, health / maxHealth));
+
+  ctx.save();
+  ctx.fillStyle = "#4b0000";
+  ctx.fillRect(x, y, barW, barH);
+
+  ctx.fillStyle = "#39d353";
+  ctx.fillRect(x, y, barW * pct, barH);
+
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x, y, barW, barH);
+  ctx.restore();
+}
+
+function pointInRect(px, py, x, y, w, h, pad = 0) {
+  return px >= x - pad && px <= x + w + pad && py >= y - pad && py <= y + h + pad;
+}
+
+function getDamageByHit(entity, bulletY) {
+  const relY = bulletY - entity.y;
+
+  if (relY <= entity.h * 0.18) return 45;
+  if (relY <= entity.h * 0.80) return 32;
+  return 18;
+}
+
+function buildBotName(team, index) {
+  const n = String(index).padStart(2, "0");
+  return team === "ally" ? `红队-${n}` : `蓝队-${n}`;
+}
+
+function createBots() {
+  bots = [];
+
+  const mode = getModeConfig(currentMode);
+  const groundY = getGroundY(canvas.height);
+  const botY = groundY - 102;
+  const spacing = mode.spacing;
+
+  for (let i = 0; i < mode.allyCount; i++) {
+    const bot = new Bot(40 + i * spacing, botY, "ally", buildBotName("ally", i + 1));
+    if (mode.forceAggressive) {
+      bot.brainType = "aggressive";
+      bot.moveSpeed += mode.botBoost;
+      bot.accel += mode.botBoost * 8;
+      bot.weapon.fireInterval = mode.fireInterval;
+      bot.weapon.reloadDuration = mode.reloadDuration;
+    }
+    bots.push(bot);
+  }
+
+  for (let i = 0; i < mode.enemyCount; i++) {
+    const bot = new Bot(WORLD.width - 40 - 68 - i * spacing, botY, "enemy", buildBotName("enemy", i + 1));
+    if (mode.forceAggressive) {
+      bot.brainType = "aggressive";
+      bot.moveSpeed += mode.botBoost;
+      bot.accel += mode.botBoost * 8;
+      bot.weapon.fireInterval = mode.fireInterval;
+      bot.weapon.reloadDuration = mode.reloadDuration;
+    }
+    bots.push(bot);
+  }
+}
+
+function updateBullets(dt) {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    bullets[i].update(dt);
+    if (!bullets[i].alive) bullets.splice(i, 1);
+  }
+}
+
+function handleBulletHits() {
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const bullet = bullets[i];
+    if (!bullet.alive) continue;
+
+    let hitTarget = null;
+
+    if (bullet.team !== player.team && !player.dead) {
+      if (pointInRect(bullet.x, bullet.y, player.x, player.y, player.w, player.h, 4)) {
+        hitTarget = player;
+      }
+    }
+
+    if (!hitTarget) {
+      for (const bot of bots) {
+        if (bot.dead) continue;
+        if (bullet.team === bot.team) continue;
+
+        if (pointInRect(bullet.x, bullet.y, bot.x, bot.y, bot.w, bot.h, 4)) {
+          hitTarget = bot;
+          break;
+        }
+      }
+    }
+
+    if (hitTarget) {
+      const damage = getDamageByHit(hitTarget, bullet.y);
+      const impactDir = bullet.vx >= 0 ? 1 : -1;
+      const died = hitTarget.takeDamage(damage, impactDir);
+
+      bullet.alive = false;
+
+      if (died) {
+        registerKill(
+          bullet.ownerRef || { team: bullet.team, name: teamName(bullet.team), kills: 0 },
+          hitTarget
+        );
+      }
+    }
+  }
+
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    if (!bullets[i].alive) bullets.splice(i, 1);
+  }
+}
+
+function updatePlayerKillToast(dt) {
+  if (playerKillToastTimer > 0) {
+    playerKillToastTimer -= dt;
+    if (playerKillToastTimer <= 0) {
+      playerKillToastTimer = 0;
+      playerKillToastEl.style.display = "none";
+    }
+  }
+}
+
+function syncMobileAimToPlayer() {
+  if (!player) return;
+
+  const playerScreenX = player.x - cameraX + player.w / 2;
+  const playerScreenY = player.y + player.h / 2;
+  const aimDistance = 190;
+
+  mouseX = clamp(playerScreenX + mobileAimVecX * aimDistance, 0, canvas.width);
+  mouseY = clamp(playerScreenY + mobileAimVecY * aimDistance, 0, canvas.height);
+}
+
+function updatePlaying(dt) {
+  if (!player) return;
+
+  player.update(dt, input, canvas.height);
+  updateCamera();
+
+  if (mobileModeEnabled) {
+    syncMobileAimToPlayer();
+  }
+
+  if (currentMode === "danger" && player.dead) {
+    endDangerRaid();
+    return;
+  }
+
+  if (input.mouseDown && !player.dead) {
+    const aimWorldX = mouseX + cameraX;
+    const aimWorldY = mouseY;
+
+    player.weapon.shootFromWorld(
+      player.x,
+      player.y,
+      player.w,
+      player.h,
+      aimWorldX,
+      aimWorldY,
+      bullets,
+      player.team,
+      player
+    );
+  }
+
+  for (let i = 0; i < bots.length; i++) {
+    bots[i].update(dt, canvas.height, player, bots, bullets);
+  }
+
+  updateBullets(dt);
+  handleBulletHits();
+  updateHUD();
+  updatePlayerKillToast(dt);
+}
+
+function drawBattle() {
+  if (!player) return;
+
+  drawMap1(ctx, canvas, cameraX);
+
+  for (const bot of bots) {
+    bot.draw(ctx, cameraX);
+  }
+
+  player.draw(ctx, cameraX, mouseX, mouseY);
+
+  for (const bullet of bullets) {
+    bullet.draw(ctx, cameraX);
+  }
+}
+
+function saveMobileMode(enabled) {
+  try {
+    localStorage.setItem(MOBILE_MODE_STORAGE_KEY, enabled ? "1" : "0");
+  } catch (e) {
+  }
+}
+
+function loadMobileMode() {
+  try {
+    const saved = localStorage.getItem(MOBILE_MODE_STORAGE_KEY);
+    if (saved === "1") return true;
+    if (saved === "0") return false;
+  } catch (e) {
+  }
+
+  const touchDevice =
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0;
+
+  return touchDevice;
+}
+
+function setSettingsOpen(open) {
+  settingsOpen = open;
+  settingsPanel.style.display = settingsOpen ? "block" : "none";
+}
+
+function updateMobileControlsVisibility() {
+  mobileControls.style.display = (mobileModeEnabled && gameState === "playing") ? "block" : "none";
+}
+
+function applyMobileMode(enabled) {
+  mobileModeEnabled = !!enabled;
+  mobileModeCheckbox.checked = mobileModeEnabled;
+  updateMobileControlsVisibility();
+  saveMobileMode(mobileModeEnabled);
+
+  if (!mobileModeEnabled) {
+    resetJoystick();
+    input.mouseDown = false;
+    input.jumpPressed = false;
+  }
+
+  requestAnimationFrame(updateJoystickCenter);
+}
+
+function updateJoystickCenter() {
+  const rect = joystick.getBoundingClientRect();
+  joystickCenterX = rect.left + rect.width / 2;
+  joystickCenterY = rect.top + rect.height / 2;
+}
+
+function setJoystickVisual(dx, dy) {
+  joystickStick.style.transform = `translate(${dx}px, ${dy}px)`;
+}
+
+function resetJoystick() {
+  joystickActive = false;
+  joystickPointerId = null;
+  input.left = false;
+  input.right = false;
+  setJoystickVisual(0, 0);
+}
+
+function updateJoystickFromPoint(clientX, clientY) {
+  const dx = clientX - joystickCenterX;
+  const dy = clientY - joystickCenterY;
+  const dist = Math.hypot(dx, dy);
+
+  let useX = dx;
+  let useY = dy;
+
+  if (dist > joystickRadius) {
+    const k = joystickRadius / dist;
+    useX *= k;
+    useY *= k;
+  }
+
+  setJoystickVisual(useX, useY);
+
+  const deadZone = 12;
+  input.left = useX < -deadZone;
+  input.right = useX > deadZone;
+
+  const mag = Math.hypot(useX, useY);
+  if (mag > 4) {
+    mobileAimVecX = useX / mag;
+    mobileAimVecY = useY / mag;
+  }
+}
+
+function getDefaultWarehouseData() {
+  if (window.cangkuSystem && typeof window.cangkuSystem.getDefaultSaveData === "function") {
+    try {
+      return window.cangkuSystem.getDefaultSaveData();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  return {
+    version: 1,
+    items: [
+      {
+        id: "ak",
+        name: "AK",
+        imageSrc: "assets/weapon-right.png",
+        gridX: 0,
+        gridY: 0,
+        orientation: "horizontal"
+      }
+    ]
+  };
+}
+
+function getCurrentWarehouseData() {
+  if (window.cangkuSystem && typeof window.cangkuSystem.getSaveData === "function") {
+    try {
+      return window.cangkuSystem.getSaveData();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  return getDefaultWarehouseData();
+}
+
+function createAccountId() {
+  if (window.crypto && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `acc_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function buildDefaultAccountSnapshot() {
+  currentAccountId = createAccountId();
+
+  return {
+    version: 1,
+    accountId: currentAccountId,
+    accountName: "新账号",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    settings: {
+      mobileModeEnabled: mobileModeEnabled
+    },
+    warehouse: getDefaultWarehouseData()
+  };
+}
+
+function buildAccountSnapshot() {
+  if (!currentAccountId) {
+    currentAccountId = createAccountId();
+  }
+
+  return {
+    version: 1,
+    accountId: currentAccountId,
+    accountName: "危险地带账号",
+    updatedAt: Date.now(),
+    settings: {
+      mobileModeEnabled: mobileModeEnabled
+    },
+    warehouse: getCurrentWarehouseData(),
+    playerState: player ? {
+      x: player.x,
+      y: player.y,
+      health: player.health,
+      ammo: player.weapon ? player.weapon.ammo : 0,
+      magSize: player.weapon ? player.weapon.magSize : 30
+    } : null
+  };
+}
+
+function applyAccountSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") return false;
+
+  currentAccountId = snapshot.accountId || currentAccountId || createAccountId();
+
+  if (snapshot.settings && typeof snapshot.settings.mobileModeEnabled === "boolean") {
+    applyMobileMode(snapshot.settings.mobileModeEnabled);
+  }
+
+  if (snapshot.warehouse && window.cangkuSystem && typeof window.cangkuSystem.loadSaveData === "function") {
+    window.cangkuSystem.loadSaveData(snapshot.warehouse);
+  } else if (window.cangkuSystem && typeof window.cangkuSystem.loadSaveData === "function") {
+    window.cangkuSystem.loadSaveData(getDefaultWarehouseData());
+  }
+
+  return true;
+}
+
+function startBattle() {
+  currentMode = "battle";
+  window.__currentMode = "battle";
+  gameState = "playing";
+  hideAllLayers();
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  hideScoreboardAndToast();
+  resetMatchState();
+  resizeCanvas();
+
+  player = new Player(300, getGroundY(canvas.height) - 102);
+  createBots();
+  updateCamera();
+  if (mobileModeEnabled) syncMobileAimToPlayer();
+  updateHUD();
+
+  lastTime = 0;
+  syncUi();
+}
+
+function startDangerRaid() {
+  currentMode = "danger";
+  window.__currentMode = "danger";
+  gameState = "playing";
+  hideAllLayers();
+  settingsOpen = false;
+  settingsPanel.style.display = "none";
+  hideScoreboardAndToast();
+  resetMatchState();
+  resizeCanvas();
+
+  player = new Player(300, getGroundY(canvas.height) - 102);
+  createBots();
+  updateCamera();
+  if (mobileModeEnabled) syncMobileAimToPlayer();
+  updateHUD();
+
+  lastTime = 0;
+  syncUi();
+}
+
+function handleMenuClick(id) {
+  if (id === "battleEnterBtn") {
+    startBattle();
+    return;
+  }
+
+  if (id === "dangerEnterBtn") {
+    showDangerLobby();
+    return;
+  }
+
+  if (id === "dangerWarehouseBtn") {
+    showWarehouse();
+    return;
+  }
+
+  if (id === "dangerStartBtn") {
+    startDangerRaid();
+    return;
+  }
+
+  if (id === "warehouseBackBtn") {
+    showDangerLobby();
+    return;
+  }
+
+  if (id === "returnLobbyBtn") {
+    returnFromResult();
+    return;
+  }
+
+  if (id === "gearBtn") {
+    setSettingsOpen(!settingsOpen);
+    return;
+  }
+
+  if (id === "closeSettingsBtn") {
+    setSettingsOpen(false);
+    return;
+  }
+}
+
+document.addEventListener("click", (e) => {
+  const target = e.target;
+  if (!target || !target.id) return;
+  handleMenuClick(target.id);
+});
+
+mobileModeCheckbox.addEventListener("change", () => {
+  applyMobileMode(mobileModeCheckbox.checked);
+  setSettingsOpen(false);
+});
+
+joystick.addEventListener("pointerdown", (e) => {
+  if (!mobileModeEnabled || gameState !== "playing") return;
+
+  e.preventDefault();
+  joystickActive = true;
+  joystickPointerId = e.pointerId;
+
+  if (joystick.setPointerCapture) {
+    joystick.setPointerCapture(e.pointerId);
+  }
+
+  updateJoystickCenter();
+  updateJoystickFromPoint(e.clientX, e.clientY);
+});
+
+window.addEventListener("pointermove", (e) => {
+  if (!joystickActive) return;
+  if (e.pointerId !== joystickPointerId) return;
+
+  e.preventDefault();
+  updateJoystickFromPoint(e.clientX, e.clientY);
+});
+
+window.addEventListener("pointerup", (e) => {
+  if (e.pointerId !== joystickPointerId) return;
+  resetJoystick();
+});
+
+window.addEventListener("pointercancel", (e) => {
+  if (e.pointerId !== joystickPointerId) return;
+  resetJoystick();
+});
+
+fireBtn.addEventListener("pointerdown", (e) => {
+  if (!mobileModeEnabled || gameState !== "playing") return;
+  e.preventDefault();
+  input.mouseDown = true;
+
+  if (fireBtn.setPointerCapture) {
+    fireBtn.setPointerCapture(e.pointerId);
+  }
+});
+
+fireBtn.addEventListener("pointerup", () => {
+  input.mouseDown = false;
+});
+
+fireBtn.addEventListener("pointercancel", () => {
+  input.mouseDown = false;
+});
+
+fireBtn.addEventListener("lostpointercapture", () => {
+  input.mouseDown = false;
+});
+
+reloadBtn.addEventListener("pointerdown", (e) => {
+  if (!mobileModeEnabled || gameState !== "playing") return;
+  e.preventDefault();
+
+  if (player) {
+    player.weapon.startReload();
+  }
+
+  if (reloadBtn.setPointerCapture) {
+    reloadBtn.setPointerCapture(e.pointerId);
+  }
+});
+
+jumpBtn.addEventListener("pointerdown", (e) => {
+  if (!mobileModeEnabled || gameState !== "playing") return;
+  e.preventDefault();
+  input.jumpPressed = true;
+
+  if (jumpBtn.setPointerCapture) {
+    jumpBtn.setPointerCapture(e.pointerId);
+  }
+});
+
+canvas.addEventListener("pointerdown", (e) => {
+  if (!mobileModeEnabled && (e.pointerType === "touch" || e.pointerType === "pen")) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+});
+
+canvas.addEventListener("pointermove", (e) => {
+  if (!mobileModeEnabled && (e.pointerType === "touch" || e.pointerType === "pen")) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+});
+
+window.addEventListener("resize", () => {
+  resizeCanvas();
+
+  if (gameState === "warehouse") {
+    if (window.cangkuSystem) {
+      window.cangkuSystem.resize();
+      window.cangkuSystem.draw();
+    }
+  }
+
+  if (gameState === "dangerLobby") {
+    requestAnimationFrame(drawDangerLobbyAvatar);
+  }
+
+  updateJoystickCenter();
+
+  if (player) {
+    player.spawnY = getGroundY(canvas.height) - player.h;
+    player.y = player.spawnY;
+    createBots();
+    updateCamera();
+
+    if (mobileModeEnabled) syncMobileAimToPlayer();
+
+    if (gameState === "playing") {
+      drawBattle();
+      updateHUD();
+    }
+  }
+});
+
+window.addEventListener("mousemove", (e) => {
+  if (!mobileModeEnabled) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  }
+});
+
+window.addEventListener("mousedown", (e) => {
+  if (e.button === 0 && gameState === "playing") {
+    input.mouseDown = true;
+  }
+});
+
+window.addEventListener("mouseup", (e) => {
+  if (e.button === 0) {
+    input.mouseDown = false;
+  }
+});
+
+window.addEventListener("keydown", (e) => {
+  if (gameState !== "playing") return;
+
+  if (e.key === "a" || e.key === "A") input.left = true;
+  if (e.key === "d" || e.key === "D") input.right = true;
+
+  if ((e.key === "w" || e.key === "W") && !e.repeat) {
+    input.jumpPressed = true;
+  }
+
+  if (e.key === "e" || e.key === "E") {
+    if (player) {
+      player.weapon.startReload();
+    }
+  }
+});
+
+window.addEventListener("keyup", (e) => {
+  if (e.key === "a" || e.key === "A") input.left = false;
+  if (e.key === "d" || e.key === "D") input.right = false;
+});
+
+window.addEventListener("blur", clearInputs);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) clearInputs();
+});
+
+window.addEventListener("contextmenu", (e) => {
+  e.preventDefault();
+});
+
+function loop(time) {
+  if (!lastTime) lastTime = time;
+  const dt = Math.min((time - lastTime) / 1000, 0.033);
+  lastTime = time;
+
+  if (gameState === "playing") {
+    updatePlaying(dt);
+    drawBattle();
+  } else if (gameState === "warehouse") {
+    if (window.cangkuSystem) {
+      window.cangkuSystem.draw();
+    }
+  } else if (gameState === "result") {
+    resultReturnTimer -= dt;
+    if (resultReturnTimer <= 0) {
+      returnFromResult();
+    }
+  } else if (gameState === "dangerLobby") {
+    drawDangerLobbyAvatar();
+  }
+
+  requestAnimationFrame(loop);
+}
+
+window.addEventListener("load", () => {
+  resizeCanvas();
+  mobileModeEnabled = loadMobileMode();
+  mobileModeCheckbox.checked = mobileModeEnabled;
+  updateMobileControlsVisibility();
+  updateJoystickCenter();
+
+  if (window.SignSystem && typeof window.SignSystem.init === "function") {
+    window.SignSystem.init({
+      buildSnapshot: buildAccountSnapshot,
+      buildDefaultSnapshot: buildDefaultAccountSnapshot,
+      applySnapshot: applyAccountSnapshot,
+      onAuthenticated: () => {
+        showModeSelect();
+      }
+    });
+  }
+
+  showLoginScreen();
+  updateHUD();
+  drawDangerLobbyAvatar();
+  requestAnimationFrame(loop);
+});
+这个是map1.js文件：
+const WORLD = {
+  tileSize: 40,
+  cols: 220,                 // 地图变大很多
+  rows: 6,
+  width: 220 * 40,
+  height: 6 * 40,
+  skyColor: "#bfe9ff",
+  groundColor: "#d8c07a",
+  darkSandColor: "#b89d57",
+  lineColor: "#000000",
+  groundRows: 3              // 地面 3 层
+};
+
+function getGroundY(canvasHeight) {
+  return canvasHeight - WORLD.groundRows * WORLD.tileSize;
+}
+
+function hash2(x, y, s) {
+  let n = x * 374761393 + y * 668265263 + s * 1442695041;
+  n = (n ^ (n >> 13)) * 1274126177;
+  return ((n ^ (n >> 16)) >>> 0) / 4294967295;
+}
+
+function drawMap1(ctx, canvas, cameraX) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const t = WORLD.tileSize;
+  const groundY = getGroundY(h);
+
+  ctx.fillStyle = WORLD.skyColor;
+  ctx.fillRect(0, 0, w, h);
+
+  const startCol = Math.floor(cameraX / t) - 2;
+  const endCol = Math.ceil((cameraX + w) / t) + 2;
+
+  for (let col = startCol; col <= endCol; col++) {
+    for (let row = 0; row < WORLD.groundRows; row++) {
+      const x = col * t - cameraX;
+      const y = groundY + row * t;
+
+      if (x + t < 0 || x > w) continue;
+
+      ctx.fillStyle = WORLD.groundColor;
+      ctx.fillRect(x, y, t, t);
+
+      ctx.strokeStyle = WORLD.lineColor;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, t, t);
+
+      if (hash2(col, row, 1) > 0.72) {
+        ctx.fillStyle = WORLD.darkSandColor;
+        ctx.fillRect(x + 6, y + 8, 3, 3);
+      }
+      if (hash2(col, row, 2) > 0.82) {
+        ctx.fillStyle = WORLD.darkSandColor;
+        ctx.fillRect(x + 22, y + 16, 2, 2);
+      }
+      if (hash2(col, row, 3) > 0.88) {
+        ctx.fillStyle = WORLD.darkSandColor;
+        ctx.fillRect(x + 14, y + 24, 2, 2);
+      }
+    }
+  }
+
+  ctx.strokeStyle = WORLD.lineColor;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, groundY);
+  ctx.lineTo(w, groundY);
+  ctx.stroke();
+
+  const leftEdgeX = 0 - cameraX;
+  const rightEdgeX = WORLD.width - cameraX;
+
+  if (leftEdgeX >= 0 && leftEdgeX <= w) {
+    ctx.beginPath();
+    ctx.moveTo(leftEdgeX, groundY);
+    ctx.lineTo(leftEdgeX, h);
+    ctx.stroke();
+  }
+
+  if (rightEdgeX >= 0 && rightEdgeX <= w) {
+    ctx.beginPath();
+    ctx.moveTo(rightEdgeX, groundY);
+    ctx.lineTo(rightEdgeX, h);
+    ctx.stroke();
+  }
+}
+这个是player.js文件：
+class Player {
+  constructor(x, y) {
+    this.spawnX = x;
+    this.spawnY = y;
+
+    this.x = x;
+    this.y = y;
+
+    this.w = 68;
+    this.h = 102;
+
+    this.vx = 0;
+    this.vy = 0;
+    this.onGround = false;
+
+    this.moveSpeed = 440;
+    this.accel = 2700;
+    this.friction = 3400;
+    this.jumpPower = 840;
+    this.gravity = 2120;
+    this.fallMultiplier = 1.12;
+
+    this.maxHealth = 100;
+    this.health = 100;
+
+    this.regenDelay = 10;
+    this.regenDuration = 5;
+    this.regenTimer = 0;
+    this.regenRate = this.maxHealth / this.regenDuration;
+
+    this.dead = false;
+    this.deathTimer = 0;
+    this.deathDuration = 1.05;
+    this.deathDir = 1;
+    this.respawnTimer = 0;
+
+    this.skinColor = "#111111";
+    this.team = "ally";
+    this.name = "玩家";
+    this.kills = 0;
+
+    this.weapon = new Weapon({ autoReload: false });
+  }
+
+  takeDamage(amount, impactDir) {
+    if (this.dead) return false;
+
+    this.health -= amount;
+    this.regenTimer = this.regenDelay;
+
+    if (this.health <= 0) {
+      this.health = 0;
+      this.dead = true;
+      this.deathTimer = this.deathDuration;
+      this.respawnTimer = 2.5;
+      this.deathDir = impactDir >= 0 ? 1 : -1;
+      this.vx = 0;
+      this.vy = 0;
+      return true;
+    }
+
+    return false;
+  }
+
+  _respawn(canvasHeight) {
+    this.x = this.spawnX;
+    this.y = getGroundY(canvasHeight) - this.h;
+    this.vx = 0;
+    this.vy = 0;
+    this.onGround = true;
+
+    this.health = 100;
+    this.dead = false;
+    this.deathTimer = 0;
+    this.respawnTimer = 0;
+    this.regenTimer = 0;
+
+    this.weapon.ammo = this.weapon.magSize;
+    this.weapon.isReloading = false;
+    this.weapon.cooldown = 0;
+  }
+
+  update(dt, input, canvasHeight) {
+    this.weapon.update(dt);
+
+    if (this.dead) {
+      this.deathTimer -= dt;
+      this.respawnTimer -= dt;
+
+      if (this.respawnTimer <= 0) {
+        this._respawn(canvasHeight);
+      }
+      return;
+    }
+
+    if (this.regenTimer > 0) {
+      this.regenTimer -= dt;
+    } else if (this.health < this.maxHealth) {
+      this.health += this.regenRate * dt;
+      if (this.health > this.maxHealth) this.health = this.maxHealth;
+    }
+
+    const groundY = getGroundY(canvasHeight);
+
+    if (input.left && !input.right) {
+      this.vx -= this.accel * dt;
+    } else if (input.right && !input.left) {
+      this.vx += this.accel * dt;
+    } else {
+      if (this.vx > 0) {
+        this.vx -= this.friction * dt;
+        if (this.vx < 0) this.vx = 0;
+      } else if (this.vx < 0) {
+        this.vx += this.friction * dt;
+        if (this.vx > 0) this.vx = 0;
+      }
+    }
+
+    if (this.vx > this.moveSpeed) this.vx = this.moveSpeed;
+    if (this.vx < -this.moveSpeed) this.vx = -this.moveSpeed;
+
+if (input.jumpPressed && this.onGround) {
+  this.vy = -this.jumpPower;
+  this.onGround = false;
+  input.jumpPressed = false;
+}
+
+    if (this.vy > 0) {
+      this.vy += this.gravity * this.fallMultiplier * dt;
+    } else {
+      this.vy += this.gravity * dt;
+    }
+
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+
+    if (this.x < 0) this.x = 0;
+    if (this.x > WORLD.width - this.w) this.x = WORLD.width - this.w;
+
+    if (this.y + this.h >= groundY) {
+      this.y = groundY - this.h;
+      this.vy = 0;
+      this.onGround = true;
+    }
+  }
+
+  draw(ctx, cameraX, mouseX, mouseY) {
+    const sx = this.x - cameraX;
+    const sy = this.y;
+
+    if (this.dead) {
+      const progress = Math.max(0, Math.min(1, 1 - (this.deathTimer / this.deathDuration)));
+      const angle = this.deathDir * (Math.PI / 2) * progress;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0.35, this.deathTimer / this.deathDuration);
+      ctx.translate(sx + this.w / 2, sy + this.h / 2);
+      ctx.rotate(angle);
+
+      ctx.fillStyle = this.skinColor;
+      ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-this.w / 2, -this.h / 2, this.w, this.h);
+
+      ctx.restore();
+      return;
+    }
+
+    ctx.fillStyle = this.skinColor;
+    ctx.fillRect(sx, sy, this.w, this.h);
+
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(sx, sy, this.w, this.h);
+
+    ctx.fillStyle = "#444444";
+    ctx.fillRect(sx + 6, sy + 6, this.w - 12, 14);
+
+    ctx.save();
+    ctx.font = "14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "#ff9b9b";
+    ctx.strokeText(this.name, sx + this.w / 2, sy - 18);
+    ctx.fillText(this.name, sx + this.w / 2, sy - 18);
+    ctx.restore();
+
+    if (typeof drawHealthBar === "function") {
+      drawHealthBar(ctx, sx, sy - 14, this.w, this.health, this.maxHealth);
+    }
+
+    this.weapon.drawPlayer(ctx, sx, sy, this.w, this.h, mouseX, mouseY);
+  }
+}
+这个是sign.js文件：
+(() => {
+  const CODE_PREFIX = "BSE1.";
+  const LAST_LOGIN_CODE_KEY = "battleSE_last_login_code";
+
+  const state = {
+    ready: false,
+    buildSnapshot: null,
+    buildDefaultSnapshot: null,
+    applySnapshot: null,
+    onAuthenticated: null,
+    currentCode: "",
+  };
+
+  function textToBase64Url(text) {
+    const bytes = new TextEncoder().encode(text);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/g, "");
+  }
+
+  function base64UrlToText(base64url) {
+    let base64 = String(base64url).replace(/-/g, "+").replace(/_/g, "/");
+    while (base64.length % 4 !== 0) base64 += "=";
+
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return new TextDecoder().decode(bytes);
+  }
+
+  function encodeSnapshot(snapshot) {
+    const json = JSON.stringify(snapshot);
+    return CODE_PREFIX + textToBase64Url(json);
+  }
+
+  function decodeSnapshot(code) {
+    const raw = String(code || "").trim();
+    if (!raw) throw new Error("账号代码为空");
+
+    const payload = raw.startsWith(CODE_PREFIX)
+      ? raw.slice(CODE_PREFIX.length)
+      : raw;
+
+    const json = base64UrlToText(payload);
+    const data = JSON.parse(json);
+
+    if (!data || typeof data !== "object") {
+      throw new Error("账号代码格式错误");
+    }
+
+    return data;
+  }
+
+  function el(id) {
+    return document.getElementById(id);
+  }
+
+  function setDisplay(id, value) {
+    const node = el(id);
+    if (node) node.style.display = value;
+  }
+
+  function hideAuthPanels() {
+    setDisplay("loginOverlay", "none");
+    setDisplay("newAccountOverlay", "none");
+    setDisplay("accountCodeOverlay", "none");
+  }
+
+  function showLogin() {
+    hideAuthPanels();
+
+    const loginOverlay = el("loginOverlay");
+    if (loginOverlay) loginOverlay.style.display = "flex";
+
+    const codeInput = el("loginCodeInput");
+    const saved = localStorage.getItem(LAST_LOGIN_CODE_KEY);
+    if (codeInput && saved) {
+      codeInput.value = saved;
+    }
+
+    const errorBox = el("loginErrorText");
+    if (errorBox) errorBox.textContent = "";
+
+    if (codeInput) {
+      setTimeout(() => codeInput.focus(), 0);
+    }
+  }
+
+  function showCreateInfo() {
+    hideAuthPanels();
+    const overlay = el("newAccountOverlay");
+    if (overlay) overlay.style.display = "flex";
+  }
+
+  function openAccountCodeModal(code) {
+    hideAuthPanels();
+
+    const overlay = el("accountCodeOverlay");
+    const text = el("accountCodeText");
+    const errorBox = el("loginErrorText");
+
+    if (errorBox) errorBox.textContent = "";
+    if (text) text.value = code || "";
+    if (overlay) overlay.style.display = "flex";
+
+    state.currentCode = code || "";
+    localStorage.setItem(LAST_LOGIN_CODE_KEY, state.currentCode);
+
+    if (text) {
+      setTimeout(() => {
+        text.focus();
+        text.select();
+      }, 0);
+    } else if (code) {
+      alert(code);
+    }
+  }
+
+  async function copyCodeToClipboard(code) {
+    const text = String(code || "");
+    if (!text) return false;
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (e) {
+    }
+
+    try {
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      temp.style.position = "fixed";
+      temp.style.left = "-9999px";
+      temp.style.top = "-9999px";
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function bindDangerSaveButton() {
+    const dangerLobbyContent = el("dangerLobbyContent");
+    if (!dangerLobbyContent) return;
+    if (el("dangerSaveBtn")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "dangerSaveBtn";
+    btn.type = "button";
+    btn.textContent = "保存游戏";
+    btn.addEventListener("click", () => {
+      const code = exportCurrentCode();
+      openAccountCodeModal(code);
+    });
+
+    dangerLobbyContent.appendChild(btn);
+  }
+
+  function bindLoginUI() {
+    const loginEnterBtn = el("loginEnterBtn");
+    const loginCreateBtn = el("loginCreateBtn");
+    const loginCodeInput = el("loginCodeInput");
+    const newAccountBackBtn = el("newAccountBackBtn");
+    const newAccountConfirmBtn = el("newAccountConfirmBtn");
+    const copyAccountCodeBtn = el("copyAccountCodeBtn");
+    const closeAccountCodeBtn = el("closeAccountCodeBtn");
+
+    if (loginEnterBtn) {
+      loginEnterBtn.addEventListener("click", () => {
+        loginFromInput();
+      });
+    }
+
+    if (loginCreateBtn) {
+      loginCreateBtn.addEventListener("click", () => {
+        showCreateInfo();
+      });
+    }
+
+    if (newAccountBackBtn) {
+      newAccountBackBtn.addEventListener("click", () => {
+        showLogin();
+      });
+    }
+
+    if (newAccountConfirmBtn) {
+      newAccountConfirmBtn.addEventListener("click", () => {
+        createNewAccount();
+      });
+    }
+
+    if (copyAccountCodeBtn) {
+      copyAccountCodeBtn.addEventListener("click", async () => {
+        const code = el("accountCodeText")?.value || state.currentCode || "";
+        const ok = await copyCodeToClipboard(code);
+        if (!ok) {
+          alert("复制失败，请手动全选复制。");
+        } else {
+          alert("已复制账号代码。");
+        }
+      });
+    }
+
+    if (closeAccountCodeBtn) {
+      closeAccountCodeBtn.addEventListener("click", () => {
+        hideAuthPanels();
+        showLogin();
+      });
+    }
+
+    if (loginCodeInput) {
+      loginCodeInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          loginFromInput();
+        }
+      });
+    }
+  }
+
+  function loginFromInput() {
+    const input = el("loginCodeInput");
+    const errorBox = el("loginErrorText");
+    const raw = input ? input.value.trim() : "";
+
+    if (errorBox) errorBox.textContent = "";
+
+    if (!raw) {
+      if (errorBox) errorBox.textContent = "请先输入账号代码。";
+      return;
+    }
+
+    try {
+      const snapshot = decodeSnapshot(raw);
+
+      if (typeof state.applySnapshot === "function") {
+        const ok = state.applySnapshot(snapshot);
+        if (ok === false) {
+          throw new Error("账号代码无法应用。");
+        }
+      }
+
+      state.currentCode = raw;
+      localStorage.setItem(LAST_LOGIN_CODE_KEY, raw);
+
+      hideAuthPanels();
+
+      if (typeof state.onAuthenticated === "function") {
+        state.onAuthenticated(snapshot);
+      }
+    } catch (err) {
+      if (errorBox) {
+        errorBox.textContent = "账号代码无效，请检查后再试。";
+      }
+      console.error(err);
+    }
+  }
+
+  function buildFallbackSnapshot() {
+    return {
+      version: 1,
+      accountId: state.currentCode || `acc_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      accountName: "危险地带账号",
+      updatedAt: Date.now(),
+      settings: {
+        mobileModeEnabled: false
+      },
+      warehouse: null
+    };
+  }
+
+  function createNewAccount() {
+    const snapshot = typeof state.buildDefaultSnapshot === "function"
+      ? state.buildDefaultSnapshot()
+      : buildFallbackSnapshot();
+
+    if (typeof state.applySnapshot === "function") {
+      state.applySnapshot(snapshot);
+    }
+
+    const code = encodeSnapshot(snapshot);
+    state.currentCode = code;
+    localStorage.setItem(LAST_LOGIN_CODE_KEY, code);
+
+    hideAuthPanels();
+
+    if (typeof state.onAuthenticated === "function") {
+      state.onAuthenticated(snapshot);
+    }
+  }
+
+  function exportCurrentCode() {
+    try {
+      let snapshot = null;
+
+      if (typeof state.buildSnapshot === "function") {
+        snapshot = state.buildSnapshot();
+      }
+
+      if (!snapshot) {
+        snapshot = typeof state.buildDefaultSnapshot === "function"
+          ? state.buildDefaultSnapshot()
+          : buildFallbackSnapshot();
+      }
+
+      if (!snapshot.accountId) {
+        snapshot.accountId = state.currentCode || `acc_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+      }
+
+      const code = encodeSnapshot(snapshot);
+      state.currentCode = code;
+      localStorage.setItem(LAST_LOGIN_CODE_KEY, code);
+      return code;
+    } catch (err) {
+      console.error(err);
+
+      const snapshot = typeof state.buildDefaultSnapshot === "function"
+        ? state.buildDefaultSnapshot()
+        : buildFallbackSnapshot();
+
+      const code = encodeSnapshot(snapshot);
+      state.currentCode = code;
+      localStorage.setItem(LAST_LOGIN_CODE_KEY, code);
+      return code;
+    }
+  }
+
+  function init(options = {}) {
+    if (state.ready) return;
+
+    state.buildSnapshot = typeof options.buildSnapshot === "function" ? options.buildSnapshot : null;
+    state.buildDefaultSnapshot = typeof options.buildDefaultSnapshot === "function" ? options.buildDefaultSnapshot : null;
+    state.applySnapshot = typeof options.applySnapshot === "function" ? options.applySnapshot : null;
+    state.onAuthenticated = typeof options.onAuthenticated === "function" ? options.onAuthenticated : null;
+
+    bindLoginUI();
+    bindDangerSaveButton();
+
+    state.ready = true;
+    showLogin();
+  }
+
+  window.SignSystem = {
+    init,
+    showLogin,
+    showCreateInfo,
+    openAccountCodeModal,
+    exportCurrentCode,
+    encodeSnapshot,
+    decodeSnapshot,
+  };
+})();
+这个是weapon.js文件：
+class Weapon {
+  constructor(options = {}) {
+    this.width = 142;
+    this.height = 85;
+
+    this.magSize = 30;
+    this.ammo = this.magSize;
+
+    this.fireInterval = options.fireInterval ?? 0.2;
+    this.cooldown = 0;
+
+    this.reloadDuration = options.reloadDuration ?? 4;
+    this.reloadTimer = 0;
+    this.isReloading = false;
+
+    this.autoReload = options.autoReload ?? false;
+    this.bulletSpeed = options.bulletSpeed ?? 1600;
+    this.muzzleDistance = 84;
+
+    this.recoilAngle = 0;
+    this.recoilMaxAngle = 75 * Math.PI / 180;
+    this.recoilPerShot = this.recoilMaxAngle / 21;
+    this.recoilRecoverDelay = 0.08;
+    this.recoilRecoverTime = 0.7;
+    this.timeSinceShot = 999;
+
+    this.recoilBulletInfluence = options.recoilBulletInfluence ?? 0.82;
+    this.recoilRandomSpread = options.recoilRandomSpread ?? 0.06;
+
+    this.muzzleFlashTime = 0;
+    this.muzzleFlashDuration = 0.06;
+
+    this.imageRight = new Image();
+    this.imageLeft = new Image();
+
+    this.loadedRight = false;
+    this.loadedLeft = false;
+    this.loaded = false;
+
+    this.spriteRight = null;
+    this.spriteLeft = null;
+
+    this.imageRight.src = "assets/weapon-right.png";
+    this.imageLeft.src = "assets/weapon-left.png";
+
+    this.imageRight.onload = () => {
+      this.spriteRight = this._buildSprite(this.imageRight);
+      this.loadedRight = true;
+      this.loaded = this.loadedRight && this.loadedLeft;
+    };
+
+    this.imageLeft.onload = () => {
+      this.spriteLeft = this._buildSprite(this.imageLeft);
+      this.loadedLeft = true;
+      this.loaded = this.loadedRight && this.loadedLeft;
+    };
+  }
+
+  _buildSprite(image) {
+    const c = document.createElement("canvas");
+    c.width = this.width;
+    c.height = this.height;
+
+    const ctx = c.getContext("2d");
+    ctx.drawImage(image, 0, 0, this.width, this.height);
+
+    return c;
+  }
+
+  update(dt) {
+    if (this.cooldown > 0) {
+      this.cooldown -= dt;
+      if (this.cooldown < 0) this.cooldown = 0;
+    }
+
+    if (this.isReloading) {
+      this.reloadTimer -= dt;
+      if (this.reloadTimer <= 0) {
+        this.isReloading = false;
+        this.reloadTimer = 0;
+        this.ammo = this.magSize;
+      }
+    }
+
+    this.timeSinceShot += dt;
+
+    if (this.timeSinceShot > this.recoilRecoverDelay && this.recoilAngle > 0) {
+      const recoverStep = (this.recoilMaxAngle / this.recoilRecoverTime) * dt;
+      this.recoilAngle -= recoverStep;
+      if (this.recoilAngle < 0) this.recoilAngle = 0;
+    }
+
+    if (this.muzzleFlashTime > 0) {
+      this.muzzleFlashTime -= dt;
+      if (this.muzzleFlashTime < 0) this.muzzleFlashTime = 0;
+    }
+  }
+
+  startReload() {
+    if (this.isReloading) return false;
+    if (this.ammo === this.magSize) return false;
+
+    this.isReloading = true;
+    this.reloadTimer = this.reloadDuration;
+    return true;
+  }
+
+  canShoot() {
+    return !this.isReloading && this.cooldown <= 0 && this.ammo > 0;
+  }
+
+  shootFromWorld(playerX, playerY, playerW, playerH, targetX, targetY, bullets, team, ownerRef = null) {
+    if (!this.canShoot()) {
+      if (this.autoReload && this.ammo === 0 && !this.isReloading) {
+        this.startReload();
+      }
+      return false;
+    }
+
+    const centerX = playerX + playerW / 2;
+    const facingRight = targetX >= centerX;
+
+    const gripX = facingRight ? playerX + playerW * 0.64 : playerX + playerW * 0.36;
+    const gripY = playerY + playerH * 0.34;
+
+    const dx = targetX - gripX;
+    const dy = targetY - gripY;
+
+    const aimAngle = Math.atan2(dy, dx);
+
+    const recoilDirection = facingRight ? -1 : 1;
+    const recoilDrivenKick = this.recoilAngle * this.recoilBulletInfluence;
+    const randomSpread = (Math.random() - 0.5) * this.recoilRandomSpread * (1 + this.recoilAngle / this.recoilMaxAngle);
+
+    const shotAngle = aimAngle + (recoilDirection * recoilDrivenKick) + randomSpread;
+
+    const muzzleX = gripX + Math.cos(shotAngle) * this.muzzleDistance;
+    const muzzleY = gripY + Math.sin(shotAngle) * this.muzzleDistance;
+
+    const vx = Math.cos(shotAngle) * this.bulletSpeed;
+    const vy = Math.sin(shotAngle) * this.bulletSpeed;
+
+    bullets.push(new AWBullet(muzzleX, muzzleY, vx, vy, team, ownerRef));
+
+    this.ammo -= 1;
+    this.cooldown = this.fireInterval;
+    this.muzzleFlashTime = this.muzzleFlashDuration;
+    this.timeSinceShot = 0;
+
+    this.recoilAngle += this.recoilPerShot;
+    if (this.recoilAngle > this.recoilMaxAngle) {
+      this.recoilAngle = this.recoilMaxAngle;
+    }
+
+    if (this.ammo <= 0) {
+      this.ammo = 0;
+      if (this.autoReload) {
+        this.startReload();
+      }
+    }
+
+    return true;
+  }
+
+  _drawReloadRing(ctx, x, y, progress) {
+    const clamped = Math.max(0, Math.min(1, progress));
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#ffffff";
+    ctx.arc(x, y, 10, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamped);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#000000";
+    ctx.arc(x, y, 10, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  _drawWeapon(ctx, gripX, gripY, rotation, facingRight = true) {
+    const sprite = facingRight ? this.spriteRight : this.spriteLeft;
+    const drawRotation = facingRight ? rotation : rotation + Math.PI;
+    const drawX = facingRight ? -22 : -(this.width - 22);
+
+    ctx.save();
+    ctx.translate(gripX, gripY);
+    ctx.rotate(drawRotation);
+
+    if (sprite) {
+      ctx.drawImage(sprite, drawX, -this.height / 2, this.width, this.height);
+    } else {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(drawX, -this.height / 2, this.width, this.height);
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(drawX, -this.height / 2, this.width, this.height);
+    }
+
+    ctx.restore();
+  }
+
+  _drawMuzzleFlash(ctx, gripX, gripY, rotation) {
+    if (this.muzzleFlashTime <= 0) return;
+
+    const t = this.muzzleFlashTime / this.muzzleFlashDuration;
+    const alpha = Math.max(0, Math.min(1, t));
+
+    const mx = gripX + Math.cos(rotation) * this.muzzleDistance;
+    const my = gripY + Math.sin(rotation) * this.muzzleDistance;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(mx, my);
+    ctx.rotate(rotation);
+
+    ctx.fillStyle = "rgba(255, 220, 120, 0.95)";
+    ctx.beginPath();
+    ctx.arc(0, 0, 6 + 4 * alpha, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(255, 140, 40, 0.9)";
+    ctx.beginPath();
+    ctx.arc(0, 0, 3 + 2 * alpha, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255, 240, 180, 0.95)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, -3);
+    ctx.lineTo(8 + 6 * alpha, 0);
+    ctx.lineTo(0, 3);
+    ctx.lineTo(-8 - 6 * alpha, 0);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  drawPlayer(ctx, playerX, playerY, playerW, playerH, mouseX, mouseY) {
+    const centerX = playerX + playerW / 2;
+    const facingRight = mouseX >= centerX;
+
+    const gripX = facingRight ? playerX + playerW * 0.64 : playerX + playerW * 0.36;
+    const gripY = playerY + playerH * 0.34;
+
+    if (this.isReloading) {
+      const reloadRotation = Math.PI / 2;
+      this._drawWeapon(ctx, gripX, gripY, reloadRotation, facingRight);
+      this._drawReloadRing(
+        ctx,
+        gripX + 12,
+        gripY - 12,
+        1 - (this.reloadTimer / this.reloadDuration)
+      );
+      return;
+    }
+
+    const dx = mouseX - gripX;
+    const dy = mouseY - gripY;
+    const aimAngle = Math.atan2(dy, dx);
+
+    const displayAngle = facingRight
+      ? aimAngle - this.recoilAngle * this.recoilBulletInfluence
+      : aimAngle + this.recoilAngle * this.recoilBulletInfluence;
+
+    this._drawWeapon(ctx, gripX, gripY, displayAngle, facingRight);
+    this._drawMuzzleFlash(ctx, gripX, gripY, displayAngle);
+  }
+
+  drawFacing(ctx, playerX, playerY, playerW, playerH, facingRight) {
+    const gripX = facingRight ? playerX + playerW * 0.64 : playerX + playerW * 0.36;
+    const gripY = playerY + playerH * 0.34;
+
+    if (this.isReloading) {
+      const reloadRotation = Math.PI / 2;
+      this._drawWeapon(ctx, gripX, gripY, reloadRotation, facingRight);
+      this._drawReloadRing(
+        ctx,
+        gripX + 12,
+        gripY - 12,
+        1 - (this.reloadTimer / this.reloadDuration)
+      );
+      return;
+    }
+
+    const baseAngle = facingRight ? 0 : Math.PI;
+    const displayAngle = facingRight
+      ? baseAngle - this.recoilAngle * this.recoilBulletInfluence
+      : baseAngle + this.recoilAngle * this.recoilBulletInfluence;
+
+    this._drawWeapon(ctx, gripX, gripY, displayAngle, facingRight);
+    this._drawMuzzleFlash(ctx, gripX, gripY, displayAngle);
+  }
+}
+这个是cangku.js文件：
+(() => {
+  function pointInRect(px, py, x, y, w, h) {
+    return px >= x && px <= x + w && py >= y && py <= y + h;
+  }
+
+  class CangkuItem {
+    constructor({
+      id = "ak",
+      name,
+      imageSrc,
+      gridX = 0,
+      gridY = 0,
+      orientation = "horizontal"
+    }) {
+      this.id = id;
+      this.name = name;
+
+      this.gridX = gridX;
+      this.gridY = gridY;
+      this.orientation = orientation; // horizontal = 5x2, vertical = 2x5
+
+      this.previewGridX = gridX;
+      this.previewGridY = gridY;
+      this.previewOrientation = orientation;
+
+      this.selected = false;
+      this.dragging = false;
+
+      this.dragOffsetX = 0;
+      this.dragOffsetY = 0;
+
+      this.originGridX = gridX;
+      this.originGridY = gridY;
+      this.originOrientation = orientation;
+
+      this.imageSrc = imageSrc;
+      this.image = new Image();
+      this.loaded = false;
+      this.image.src = imageSrc;
+      this.image.onload = () => {
+        this.loaded = true;
+        if (window.cangkuSystem) window.cangkuSystem.draw();
+      };
+    }
+  }
+
+  class CangkuSystem {
+    constructor(canvas) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext("2d");
+      this.leftPane = canvas.parentElement;
+
+      this.cols = 9;
+      this.rows = 18;
+
+      this.visible = false;
+
+      this.cellSize = 48;
+      this.gridX = 24;
+      this.gridY = 24;
+      this.gridW = 0;
+      this.gridH = 0;
+      this.contentHeight = 0;
+
+      this.grid = [];
+      this.items = [];
+
+      this.activeItem = null;
+
+      this._createGrid();
+
+      this._bindEvents();
+      this.resize();
+      this.loadSaveData(this.getDefaultSaveData());
+    }
+
+    _createGrid() {
+      this.grid = [];
+      for (let y = 0; y < this.rows; y++) {
+        const row = [];
+        for (let x = 0; x < this.cols; x++) {
+          row.push(null);
+        }
+        this.grid.push(row);
+      }
+    }
+
+    _createDefaultItem() {
+      return new CangkuItem({
+        id: "ak",
+        name: "AK",
+        imageSrc: "assets/weapon-right.png",
+        gridX: 0,
+        gridY: 0,
+        orientation: "horizontal"
+      });
+    }
+
+    getDefaultSaveData() {
+      return {
+        version: 1,
+        items: [
+          {
+            id: "ak",
+            name: "AK",
+            imageSrc: "assets/weapon-right.png",
+            gridX: 0,
+            gridY: 0,
+            orientation: "horizontal"
+          }
+        ]
+      };
+    }
+
+    getSaveData() {
+      return {
+        version: 1,
+        items: this.items.map((item) => ({
+          id: item.id || "ak",
+          name: item.name || "AK",
+          imageSrc: item.imageSrc || "assets/weapon-right.png",
+          gridX: item.gridX,
+          gridY: item.gridY,
+          orientation: item.orientation
+        }))
+      };
+    }
+
+    _createItemFromData(data) {
+      if (!data || typeof data !== "object") return null;
+
+      const id = data.id || "ak";
+      const name = data.name || "AK";
+      const imageSrc = data.imageSrc || "assets/weapon-right.png";
+      const gridX = Number.isFinite(data.gridX) ? data.gridX : 0;
+      const gridY = Number.isFinite(data.gridY) ? data.gridY : 0;
+      const orientation = data.orientation === "vertical" ? "vertical" : "horizontal";
+
+      return new CangkuItem({
+        id,
+        name,
+        imageSrc,
+        gridX,
+        gridY,
+        orientation
+      });
+    }
+
+    loadSaveData(saveData) {
+      this._createGrid();
+      this.items = [];
+      this.activeItem = null;
+
+      const sourceItems =
+        saveData && Array.isArray(saveData.items) && saveData.items.length > 0
+          ? saveData.items
+          : this.getDefaultSaveData().items;
+
+      for (const itemData of sourceItems) {
+        const item = this._createItemFromData(itemData);
+        if (!item) continue;
+
+        const dims = this._getDims(item.orientation);
+        if (
+          item.gridX < 0 ||
+          item.gridY < 0 ||
+          item.gridX + dims.w > this.cols ||
+          item.gridY + dims.h > this.rows
+        ) {
+          continue;
+        }
+
+        if (!this._canPlace(item, item.gridX, item.gridY, item.orientation)) {
+          continue;
+        }
+
+        this.items.push(item);
+        this._commitItem(item, item.gridX, item.gridY, item.orientation);
+      }
+
+      if (this.items.length === 0) {
+        const item = this._createDefaultItem();
+        this.items.push(item);
+        this._commitItem(item, 0, 0, "horizontal");
+      }
+
+      this.ak = this.items.find((it) => it.id === "ak") || this.items[0] || null;
+
+      this.draw();
+    }
+
+    _bindEvents() {
+      this.canvas.addEventListener("pointerdown", (e) => {
+        if (!this.visible) return;
+
+        const p = this._getPointerPos(e);
+        const item = this._hitTestItem(p.x, p.y);
+
+        if (!item) {
+          if (this.activeItem) this.activeItem.selected = false;
+          this.activeItem = null;
+          this.draw();
+          return;
+        }
+
+        this.activeItem = item;
+        item.selected = true;
+        item.dragging = true;
+
+        const rect = this._getItemRect(item, item.gridX, item.gridY, item.orientation);
+        item.dragOffsetX = p.x - rect.x;
+        item.dragOffsetY = p.y - rect.y;
+
+        item.originGridX = item.gridX;
+        item.originGridY = item.gridY;
+        item.originOrientation = item.orientation;
+
+        this._removeItemFromGrid(item);
+
+        if (this.canvas.setPointerCapture) {
+          this.canvas.setPointerCapture(e.pointerId);
+        }
+
+        this.draw();
+      });
+
+      this.canvas.addEventListener("pointermove", (e) => {
+        if (!this.visible) return;
+        if (!this.activeItem || !this.activeItem.dragging) return;
+
+        const p = this._getPointerPos(e);
+        const item = this.activeItem;
+
+        const rawX = p.x - item.dragOffsetX;
+        const rawY = p.y - item.dragOffsetY;
+
+        item.previewGridX = Math.round((rawX - this.gridX) / this.cellSize);
+        item.previewGridY = Math.round((rawY - this.gridY) / this.cellSize);
+
+        item.previewOrientation = this._resolvePreviewOrientation(
+          item,
+          item.previewGridX,
+          item.previewGridY
+        );
+
+        this.draw();
+      });
+
+      const finishDrag = () => {
+        if (!this.activeItem) return;
+
+        const item = this.activeItem;
+        const gx = item.previewGridX;
+        const gy = item.previewGridY;
+
+        const resolved = this._resolvePlacement(item, gx, gy);
+
+        if (resolved) {
+          this._commitItem(item, resolved.gridX, resolved.gridY, resolved.orientation);
+        } else {
+          this._commitItem(item, item.originGridX, item.originGridY, item.originOrientation);
+        }
+
+        item.dragging = false;
+        item.selected = false;
+        item.previewOrientation = item.orientation;
+        this.activeItem = null;
+
+        this.draw();
+      };
+
+      this.canvas.addEventListener("pointerup", finishDrag);
+      this.canvas.addEventListener("pointercancel", finishDrag);
+      window.addEventListener("blur", finishDrag);
+    }
+
+    _getPointerPos(e) {
+      const rect = this.canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    _getDims(orientation) {
+      if (orientation === "vertical") {
+        return { w: 2, h: 5 };
+      }
+      return { w: 5, h: 2 };
+    }
+
+    _otherOrientation(orientation) {
+      return orientation === "horizontal" ? "vertical" : "horizontal";
+    }
+
+    _getItemRect(item, gx, gy, orientation) {
+      const dims = this._getDims(orientation);
+      return {
+        x: this.gridX + gx * this.cellSize,
+        y: this.gridY + gy * this.cellSize,
+        w: dims.w * this.cellSize,
+        h: dims.h * this.cellSize
+      };
+    }
+
+    _hitTestItem(px, py) {
+      for (let i = this.items.length - 1; i >= 0; i--) {
+        const item = this.items[i];
+        const dims = this._getDims(item.orientation);
+        const rect = this._getItemRect(item, item.gridX, item.gridY, item.orientation);
+        if (pointInRect(px, py, rect.x, rect.y, rect.w, rect.h)) {
+          return item;
+        }
+      }
+      return null;
+    }
+
+    _canPlace(item, gridX, gridY, orientation) {
+      const dims = this._getDims(orientation);
+
+      if (gridX < 0 || gridY < 0) return false;
+      if (gridX + dims.w > this.cols) return false;
+      if (gridY + dims.h > this.rows) return false;
+
+      for (let y = 0; y < dims.h; y++) {
+        for (let x = 0; x < dims.w; x++) {
+          if (this.grid[gridY + y][gridX + x] !== null) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
+    _removeItemFromGrid(item) {
+      for (let y = 0; y < this.rows; y++) {
+        for (let x = 0; x < this.cols; x++) {
+          if (this.grid[y][x] === item) {
+            this.grid[y][x] = null;
+          }
+        }
+      }
+    }
+
+    _commitItem(item, gridX, gridY, orientation) {
+      this._removeItemFromGrid(item);
+
+      const dims = this._getDims(orientation);
+      for (let y = 0; y < dims.h; y++) {
+        for (let x = 0; x < dims.w; x++) {
+          this.grid[gridY + y][gridX + x] = item;
+        }
+      }
+
+      item.gridX = gridX;
+      item.gridY = gridY;
+      item.orientation = orientation;
+      item.previewGridX = gridX;
+      item.previewGridY = gridY;
+      item.previewOrientation = orientation;
+    }
+
+    _resolvePreviewOrientation(item, gridX, gridY) {
+      if (this._canPlace(item, gridX, gridY, item.orientation)) {
+        return item.orientation;
+      }
+
+      const alt = this._otherOrientation(item.orientation);
+      if (this._canPlace(item, gridX, gridY, alt)) {
+        return alt;
+      }
+
+      return item.orientation;
+    }
+
+    _resolvePlacement(item, gridX, gridY) {
+      if (this._canPlace(item, gridX, gridY, item.orientation)) {
+        return { gridX, gridY, orientation: item.orientation };
+      }
+
+      const alt = this._otherOrientation(item.orientation);
+      if (this._canPlace(item, gridX, gridY, alt)) {
+        return { gridX, gridY, orientation: alt };
+      }
+
+      return null;
+    }
+
+    resize() {
+      const parentW = Math.max(1, this.leftPane.clientWidth);
+      const parentH = Math.max(1, this.leftPane.clientHeight);
+
+      const base = Math.min((parentW - 48) / this.cols, (parentH - 48) / this.rows);
+      this.cellSize = Math.max(44, Math.floor(base));
+
+      this.gridW = this.cellSize * this.cols;
+      this.gridH = this.cellSize * this.rows;
+
+      this.gridX = 24;
+      this.gridY = 24;
+
+      this.contentHeight = this.gridY + this.gridH + 420;
+
+      this.canvas.width = parentW;
+      this.canvas.height = this.contentHeight;
+      this.canvas.style.width = `${parentW}px`;
+      this.canvas.style.height = `${this.contentHeight}px`;
+
+      this.draw();
+    }
+
+    show() {
+      this.visible = true;
+      this.draw();
+    }
+
+    hide() {
+      this.visible = false;
+    }
+
+    draw() {
+      if (!this.visible) return;
+
+      const ctx = this.ctx;
+      const w = this.canvas.width;
+      const h = this.canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.fillStyle = "#fafafa";
+      ctx.fillRect(this.gridX - 8, this.gridY - 8, this.gridW + 16, this.gridH + 16);
+      ctx.strokeStyle = "#e7e7e7";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(this.gridX - 8, this.gridY - 8, this.gridW + 16, this.gridH + 16);
+      ctx.restore();
+
+      for (let y = 0; y < this.rows; y++) {
+        for (let x = 0; x < this.cols; x++) {
+          const px = this.gridX + x * this.cellSize;
+          const py = this.gridY + y * this.cellSize;
+
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(px, py, this.cellSize, this.cellSize);
+
+          ctx.strokeStyle = "rgba(0,0,0,0.12)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(px, py, this.cellSize, this.cellSize);
+        }
+      }
+
+      for (const item of this.items) {
+        if (item.dragging) continue;
+
+        const dims = this._getDims(item.orientation);
+        const drawX = this.gridX + item.gridX * this.cellSize;
+        const drawY = this.gridY + item.gridY * this.cellSize;
+
+        for (let yy = 0; yy < dims.h; yy++) {
+          for (let xx = 0; xx < dims.w; xx++) {
+            const cellX = drawX + xx * this.cellSize;
+            const cellY = drawY + yy * this.cellSize;
+
+            ctx.fillStyle = "rgba(140, 140, 140, 0.58)";
+            ctx.fillRect(cellX, cellY, this.cellSize, this.cellSize);
+
+            ctx.strokeStyle = "rgba(0,0,0,0.14)";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(cellX, cellY, this.cellSize, this.cellSize);
+          }
+        }
+
+        this._drawItemSprite(item, drawX, drawY, dims.w, dims.h, item.orientation, 1, 0.92);
+
+        ctx.save();
+        ctx.lineWidth = item.selected ? 3 : 2;
+        ctx.strokeStyle = item.selected ? "#1f9d42" : "rgba(0,0,0,0.55)";
+        ctx.strokeRect(drawX + 1, drawY + 1, dims.w * this.cellSize - 2, dims.h * this.cellSize - 2);
+        ctx.restore();
+      }
+
+      if (this.activeItem && this.activeItem.dragging) {
+        const item = this.activeItem;
+        const orientation = item.previewOrientation;
+        const dims = this._getDims(orientation);
+        const canFit = this._canPlace(item, item.previewGridX, item.previewGridY, orientation);
+
+        const drawX = this.gridX + item.previewGridX * this.cellSize;
+        const drawY = this.gridY + item.previewGridY * this.cellSize;
+
+        for (let yy = 0; yy < dims.h; yy++) {
+          for (let xx = 0; xx < dims.w; xx++) {
+            const cellX = drawX + xx * this.cellSize;
+            const cellY = drawY + yy * this.cellSize;
+
+            ctx.fillStyle = canFit
+              ? "rgba(60, 205, 90, 0.52)"
+              : "rgba(255, 70, 70, 0.72)";
+            ctx.fillRect(cellX, cellY, this.cellSize, this.cellSize);
+
+            ctx.strokeStyle = "rgba(0,0,0,0.14)";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(cellX, cellY, this.cellSize, this.cellSize);
+          }
+        }
+
+        this._drawItemSprite(item, drawX, drawY, dims.w, dims.h, orientation, 1.08, 0.98);
+
+        ctx.save();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = canFit ? "#1f9d42" : "#d64040";
+        ctx.strokeRect(drawX + 1, drawY + 1, dims.w * this.cellSize - 2, dims.h * this.cellSize - 2);
+        ctx.restore();
+      }
+
+      ctx.save();
+      ctx.fillStyle = "#444";
+      ctx.font = "15px Arial";
+      ctx.fillText("左侧是仓库格子，向下滚动还能看到更多空位", 24, 24);
+      ctx.fillText("AK 拖拽时会放大，松手后恢复正常", 24, 46);
+      ctx.fillText("AK 竖放时图片会旋转并按比例缩放，不会被拉伸", 24, 68);
+      ctx.restore();
+    }
+
+    _drawItemSprite(item, drawX, drawY, cellsW, cellsH, orientation, scale = 1, alpha = 1) {
+      const pixelW = cellsW * this.cellSize;
+      const pixelH = cellsH * this.cellSize;
+
+      const centerX = drawX + pixelW / 2;
+      const centerY = drawY + pixelH / 2;
+
+      const imgW = item.image.naturalWidth || item.image.width || 1;
+      const imgH = item.image.naturalHeight || item.image.height || 1;
+
+      const effectiveW = orientation === "vertical" ? imgH : imgW;
+      const effectiveH = orientation === "vertical" ? imgW : imgH;
+
+      const maxW = pixelW * 0.92;
+      const maxH = pixelH * 0.92;
+      const fitScale = Math.min(maxW / effectiveW, maxH / effectiveH) * scale;
+
+      const drawW = imgW * fitScale;
+      const drawH = imgH * fitScale;
+
+      const angle = orientation === "vertical" ? Math.PI / 2 : 0;
+
+      this.ctx.save();
+      this.ctx.globalAlpha = alpha;
+      this.ctx.translate(centerX, centerY);
+      this.ctx.rotate(angle);
+
+      if (item.loaded) {
+        this.ctx.drawImage(item.image, -drawW / 2, -drawH / 2, drawW, drawH);
+      } else {
+        this.ctx.fillStyle = "rgba(120,120,120,0.22)";
+        this.ctx.fillRect(-drawW / 2, -drawH / 2, drawW, drawH);
+      }
+
+      this.ctx.restore();
+    }
+  }
+
+  function boot() {
+    const canvas = document.getElementById("warehouseCanvas");
+    if (!canvas || window.cangkuSystem) return;
+    window.cangkuSystem = new CangkuSystem(canvas);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+这个是bot.js文件：
+class Bot {
+  constructor(x, y, team, name = "") {
+    this.x = x;
+    this.y = y;
+    this.team = team;
+
+    this.w = 68;
+    this.h = 102;
+
+    this.spawnX = x;
+    this.spawnY = y;
+
+    this.vx = 0;
+    this.vy = 0;
+    this.onGround = false;
+
+    this.moveSpeed = 380;
+    this.accel = 2400;
+    this.friction = 3000;
+    this.jumpPower = 820;
+    this.gravity = 2120;
+    this.fallMultiplier = 1.12;
+
+    this.maxHealth = 100;
+    this.health = 100;
+
+    this.regenDelay = 10;
+    this.regenDuration = 5;
+    this.regenTimer = 0;
+    this.regenRate = this.maxHealth / this.regenDuration;
+
+    this.dead = false;
+    this.deathTimer = 0;
+    this.deathDuration = 1.0;
+    this.deathDir = 1;
+    this.respawnTimer = 0;
+    this.respawnDuration = 2.5;
+
+    this.name = name || (team === "ally" ? "红队" : "蓝队");
+    this.kills = 0;
+
+    this.color = team === "ally" ? "#d11f1f" : "#1f4fd1";
+    this.weapon = new Weapon({ autoReload: true, fireInterval: 0.2, reloadDuration: 4 });
+
+    this.facingRight = team === "ally";
+
+    this.brainType = ["aggressive", "steady", "erratic", "cautious"][Math.floor(Math.random() * 4)];
+    this.behaviorTimer = 0.3 + Math.random() * 1.8;
+    this.behavior = "hold";
+    this.wanderDir = Math.random() < 0.5 ? -1 : 1;
+    this.jumpTimer = 0.6 + Math.random() * 2.2;
+
+    // 7 或 8 个方块的开火距离
+    this.engageRangeTiles = 7 + Math.floor(Math.random() * 2);
+  }
+
+  takeDamage(amount, impactDir) {
+    if (this.dead) return false;
+
+    this.health -= amount;
+    this.regenTimer = this.regenDelay;
+
+    if (this.health <= 0) {
+      this.health = 0;
+      this.dead = true;
+      this.deathTimer = this.deathDuration;
+      this.respawnTimer = this.respawnDuration;
+      this.deathDir = impactDir >= 0 ? 1 : -1;
+      this.vx = 0;
+      this.vy = 0;
+      return true;
+    }
+
+    return false;
+  }
+
+  _respawn(canvasHeight) {
+    this.x = this.spawnX;
+    this.y = this.spawnY || (getGroundY(canvasHeight) - this.h);
+    this.vx = 0;
+    this.vy = 0;
+    this.onGround = true;
+
+    this.health = 100;
+    this.dead = false;
+    this.deathTimer = 0;
+    this.respawnTimer = 0;
+    this.regenTimer = 0;
+
+    this.weapon.ammo = this.weapon.magSize;
+    this.weapon.isReloading = false;
+    this.weapon.cooldown = 0;
+
+    this.behaviorTimer = 0.3 + Math.random() * 1.8;
+    this.behavior = "hold";
+    this.wanderDir = Math.random() < 0.5 ? -1 : 1;
+    this.jumpTimer = 0.6 + Math.random() * 2.2;
+    this.facingRight = this.team === "ally";
+  }
+
+  _chooseBehavior() {
+    const r = Math.random();
+
+    if (this.brainType === "aggressive") {
+      if (r < 0.50) this.behavior = "advance";
+      else if (r < 0.68) this.behavior = "hold";
+      else if (r < 0.82) this.behavior = "retreat";
+      else this.behavior = "wander";
+    } else if (this.brainType === "cautious") {
+      if (r < 0.22) this.behavior = "advance";
+      else if (r < 0.52) this.behavior = "hold";
+      else if (r < 0.78) this.behavior = "retreat";
+      else this.behavior = "wander";
+    } else if (this.brainType === "erratic") {
+      if (r < 0.35) this.behavior = "wander";
+      else if (r < 0.60) this.behavior = "advance";
+      else if (r < 0.80) this.behavior = "hold";
+      else this.behavior = "retreat";
+    } else {
+      if (r < 0.34) this.behavior = "advance";
+      else if (r < 0.60) this.behavior = "hold";
+      else if (r < 0.82) this.behavior = "wander";
+      else this.behavior = "retreat";
+    }
+
+    this.behaviorTimer = 0.7 + Math.random() * 2.5;
+    this.wanderDir = Math.random() < 0.5 ? -1 : 1;
+  }
+
+  _aliveEnemies(player, bots) {
+    const out = [];
+
+    if (this.team === "ally") {
+      for (const bot of bots) {
+        if (bot.team === "enemy" && !bot.dead) out.push(bot);
+      }
+    } else {
+      if (!player.dead) out.push(player);
+      for (const bot of bots) {
+        if (bot.team === "ally" && !bot.dead) out.push(bot);
+      }
+    }
+
+    return out;
+  }
+
+  _pickTarget(player, bots) {
+    const list = this._aliveEnemies(player, bots);
+    if (list.length === 0) return null;
+
+    const centerX = this.x + this.w / 2;
+
+    const nearest = () => {
+      let best = list[0];
+      let bestDist = Math.abs((best.x + best.w / 2) - centerX);
+
+      for (const e of list) {
+        const d = Math.abs((e.x + e.w / 2) - centerX);
+        if (d < bestDist) {
+          best = e;
+          bestDist = d;
+        }
+      }
+      return best;
+    };
+
+    const farthest = () => {
+      let best = list[0];
+      let bestDist = Math.abs((best.x + best.w / 2) - centerX);
+
+      for (const e of list) {
+        const d = Math.abs((e.x + e.w / 2) - centerX);
+        if (d > bestDist) {
+          best = e;
+          bestDist = d;
+        }
+      }
+      return best;
+    };
+
+    const roll = Math.random();
+    if (roll < 0.65) return nearest();
+    if (roll < 0.85) return list[Math.floor(Math.random() * list.length)];
+    return farthest();
+  }
+
+  update(dt, canvasHeight, player, bots, bullets) {
+    this.weapon.update(dt);
+
+    if (this.dead) {
+      this.deathTimer -= dt;
+      this.respawnTimer -= dt;
+
+      if (this.respawnTimer <= 0) {
+        this._respawn(canvasHeight);
+      }
+      return true;
+    }
+
+    if (this.regenTimer > 0) {
+      this.regenTimer -= dt;
+    } else if (this.health < this.maxHealth) {
+      this.health += this.regenRate * dt;
+      if (this.health > this.maxHealth) this.health = this.maxHealth;
+    }
+
+    const groundY = getGroundY(canvasHeight);
+    const teamDir = this.team === "ally" ? 1 : -1;
+
+    this.behaviorTimer -= dt;
+    if (this.behaviorTimer <= 0) {
+      this._chooseBehavior();
+    }
+
+    const target = this._pickTarget(player, bots);
+
+    let moveDir = 0;
+    if (this.behavior === "advance") moveDir = teamDir;
+    else if (this.behavior === "retreat") moveDir = -teamDir;
+    else if (this.behavior === "wander") moveDir = this.wanderDir;
+    else moveDir = 0;
+
+    const leftBattleEdge = WORLD.width * 0.08;
+    const rightBattleEdge = WORLD.width * 0.92;
+
+    if (this.team === "ally" && this.x < leftBattleEdge) {
+      moveDir = Math.max(moveDir, 1);
+    }
+    if (this.team === "enemy" && this.x > rightBattleEdge) {
+      moveDir = Math.min(moveDir, -1);
+    }
+
+    const ignoreEnemy = Math.random() < 0.20 && this.behavior !== "hold";
+
+    if (moveDir !== 0) {
+      this.vx += moveDir * this.accel * dt;
+    } else {
+      if (this.vx > 0) {
+        this.vx -= this.friction * dt;
+        if (this.vx < 0) this.vx = 0;
+      } else if (this.vx < 0) {
+        this.vx += this.friction * dt;
+        if (this.vx > 0) this.vx = 0;
+      }
+    }
+
+    if (this.vx > this.moveSpeed) this.vx = this.moveSpeed;
+    if (this.vx < -this.moveSpeed) this.vx = -this.moveSpeed;
+
+    this.jumpTimer -= dt;
+    if (this.onGround && this.jumpTimer <= 0) {
+      if (Math.random() < 0.45 && (moveDir !== 0 || this.behavior === "advance")) {
+        this.vy = -this.jumpPower;
+        this.onGround = false;
+      }
+      this.jumpTimer = 1.0 + Math.random() * 2.8;
+    }
+
+    if (target && !ignoreEnemy) {
+      const centerX = this.x + this.w / 2;
+      const targetCenterX = target.x + target.w / 2;
+      const targetCenterY = target.y + target.h / 2;
+      const dist = Math.abs(targetCenterX - centerX);
+
+      const engageRange = WORLD.tileSize * this.engageRangeTiles;
+
+      if (dist <= engageRange && this.weapon.canShoot()) {
+        this.facingRight = targetCenterX >= centerX;
+
+        const aimError = (Math.random() - 0.5) * 18;
+        this.weapon.shootFromWorld(
+          this.x,
+          this.y,
+          this.w,
+          this.h,
+          targetCenterX + aimError,
+          targetCenterY + aimError,
+          bullets,
+          this.team,
+          this
+        );
+      } else if (moveDir !== 0) {
+        this.facingRight = moveDir > 0;
+      } else {
+        this.facingRight = targetCenterX >= centerX;
+      }
+    } else if (moveDir !== 0) {
+      this.facingRight = moveDir > 0;
+    }
+
+    if (this.vy > 0) {
+      this.vy += this.gravity * this.fallMultiplier * dt;
+    } else {
+      this.vy += this.gravity * dt;
+    }
+
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+
+    if (this.x < 0) this.x = 0;
+    if (this.x > WORLD.width - this.w) this.x = WORLD.width - this.w;
+
+    if (this.y + this.h >= groundY) {
+      this.y = groundY - this.h;
+      this.vy = 0;
+      this.onGround = true;
+    }
+
+    return true;
+  }
+
+  draw(ctx, cameraX) {
+    const sx = this.x - cameraX;
+    const sy = this.y;
+
+    if (this.dead) {
+      const progress = Math.max(0, Math.min(1, 1 - (this.deathTimer / this.deathDuration)));
+      const angle = this.deathDir * (Math.PI / 2) * progress;
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0.35, this.deathTimer / this.deathDuration);
+      ctx.translate(sx + this.w / 2, sy + this.h / 2);
+      ctx.rotate(angle);
+
+      ctx.fillStyle = this.color;
+      ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-this.w / 2, -this.h / 2, this.w, this.h);
+
+      ctx.restore();
+      return;
+    }
+
+    ctx.fillStyle = this.color;
+    ctx.fillRect(sx, sy, this.w, this.h);
+
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(sx, sy, this.w, this.h);
+
+    ctx.fillStyle = "#666666";
+    ctx.fillRect(sx + 6, sy + 6, this.w - 12, 14);
+
+    ctx.save();
+    ctx.font = "14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = this.team === "ally" ? "#ff8a8a" : "#8ab8ff";
+    ctx.strokeText(this.name, sx + this.w / 2, sy - 18);
+    ctx.fillText(this.name, sx + this.w / 2, sy - 18);
+    ctx.restore();
+
+    if (typeof drawHealthBar === "function") {
+      drawHealthBar(ctx, sx, sy - 14, this.w, this.health, this.maxHealth);
+    }
+
+    this.weapon.drawFacing(ctx, sx, sy, this.w, this.h, this.facingRight);
+  }
+}
+这个是AWbullet(A是指AK，W是指weapon)文件：
+class AWBullet {
+  constructor(x, y, vx, vy, team, ownerRef = null) {
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.team = team;
+    this.ownerRef = ownerRef;
+    this.ownerName = ownerRef && ownerRef.name ? ownerRef.name : (team === "ally" ? "红队" : "蓝队");
+
+    this.radius = 3.3;
+    this.traveled = 0;
+    this.maxDistance = WORLD.tileSize * 10;
+    this.alive = true;
+
+    this.trail = [];
+    this.maxTrailLength = 7;
+  }
+
+  update(dt) {
+    if (!this.alive) return;
+
+    const oldX = this.x;
+    const oldY = this.y;
+
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+
+    this.traveled += Math.hypot(this.x - oldX, this.y - oldY);
+
+    this.trail.push({ x: this.x, y: this.y });
+    if (this.trail.length > this.maxTrailLength) {
+      this.trail.shift();
+    }
+
+    if (this.traveled >= this.maxDistance) {
+      this.alive = false;
+      return;
+    }
+
+    if (this.x < -200 || this.x > WORLD.width + 200) {
+      this.alive = false;
+      return;
+    }
+
+    if (this.y < -200 || this.y > 5000) {
+      this.alive = false;
+      return;
+    }
+  }
+
+  draw(ctx, cameraX) {
+    if (!this.alive) return;
+
+    const sx = this.x - cameraX;
+    const headColor = this.team === "enemy" ? "#a9d2ff" : "#ffb2b2";
+    const trailColor = this.team === "enemy" ? "rgba(160, 210, 255, " : "rgba(255, 170, 170, ";
+
+    if (this.trail.length > 1) {
+      ctx.save();
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = this.team === "enemy" ? "rgba(120, 190, 255, 0.35)" : "rgba(255, 120, 120, 0.35)";
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      for (let i = 0; i < this.trail.length; i++) {
+        const p = this.trail[i];
+        const px = p.x - cameraX;
+        const py = p.y;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    for (let i = 0; i < this.trail.length; i++) {
+      const p = this.trail[i];
+      const alpha = ((i + 1) / this.trail.length) * 0.18;
+
+      ctx.save();
+      ctx.fillStyle = `${trailColor}${alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x - cameraX, p.y, this.radius * 0.75, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = this.team === "enemy" ? "#7cc1ff" : "#ff7c7c";
+    ctx.fillStyle = headColor;
+    ctx.beginPath();
+    ctx.arc(sx, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
